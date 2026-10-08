@@ -1,0 +1,757 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font:14px/1.5 system-ui,sans-serif}img{max-width:100%}[hidden]{display:none!important}</style>
+</head>
+<body>
+<title>F&amp;B 2027 Stress Test</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Source+Sans+3:wght@400;600&family=IBM+Plex+Mono:wght@500&display=swap">
+<style>
+/* Layout: one narrow column. Results lead with the score, then the dollar stress test, the timeline, three plays, locked areas, booking. */
+:root {
+  --paper: #f5f6f3; --surface: #ffffff; --ink: #1a1f1c; --muted: #5d6660; --line: #dadfd8;
+  --leaf: #1f5e3a; --leaf-soft: #e1eee5; --chili: #c8361d; --chili-soft: #f9e3de; --amber: #a86b0c; --amber-soft: #f7ecd6;
+  --good: #2f7d4f; --good-soft: #e3f1e8;
+  --f-display: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --f-body: "Source Sans 3", "Segoe UI", system-ui, sans-serif;
+  --f-mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --paper: #111513; --surface: #19201c; --ink: #e9eeea; --muted: #9ea9a2; --line: #2a332e;
+  --leaf: #6cc28f; --leaf-soft: #193324; --chili: #f2795f; --chili-soft: #3b1d17; --amber: #e2a93c; --amber-soft: #382b13;
+  --good: #63c08f; --good-soft: #17301f; color-scheme: dark; } }
+:root[data-theme="dark"] {
+  --paper: #111513; --surface: #19201c; --ink: #e9eeea; --muted: #9ea9a2; --line: #2a332e;
+  --leaf: #6cc28f; --leaf-soft: #193324; --chili: #f2795f; --chili-soft: #3b1d17; --amber: #e2a93c; --amber-soft: #382b13;
+  --good: #63c08f; --good-soft: #17301f; color-scheme: dark; }
+
+[hidden] { display: none !important; }
+.review { background: var(--amber-soft); border: 1px solid var(--amber); border-radius: 10px; padding: 10px 14px; font-size: 0.92rem; margin-bottom: 20px; }
+.review .sel { font-family: var(--f-mono); font-size: 0.88em; user-select: all; word-break: break-all; }
+
+body { background: var(--paper); color: var(--ink); font-family: var(--f-body); font-size: 16px; line-height: 1.55; }
+.wrap { max-width: 720px; margin: 0 auto; padding-inline: 20px; padding-block: 20px 64px; }
+h1, h2, h3 { font-family: var(--f-display); font-weight: 700; line-height: 1.12; margin: 0; text-wrap: balance; letter-spacing: -0.01em; }
+h1 { font-size: clamp(2rem, 6.5vw, 3rem); }
+h2 { font-size: 1.5rem; }
+h3 { font-size: 1.12rem; }
+p { margin: 0; }
+.muted { color: var(--muted); }
+.eyebrow { font-family: var(--f-mono); font-size: 0.72rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+.num { font-family: var(--f-mono); font-variant-numeric: tabular-nums; }
+.stack { display: flex; flex-direction: column; gap: 16px; }
+.stack-sm { display: flex; flex-direction: column; gap: 8px; }
+.stack-lg { display: flex; flex-direction: column; gap: 36px; }
+button, input, select { font: inherit; color: inherit; }
+:focus-visible { outline: 2px solid var(--leaf); outline-offset: 2px; }
+
+.bar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; padding-bottom: 16px; border-bottom: 1px solid var(--line); margin-bottom: 28px; }
+.brand { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+.brand b { font-family: var(--f-display); font-size: 1.15rem; }
+.chip { display: inline-flex; align-items: center; gap: 6px; font-size: 0.8rem; padding: 3px 10px; border-radius: 999px; background: var(--leaf-soft); color: var(--leaf); font-weight: 600; }
+.tabs { display: flex; gap: 4px; flex-wrap: wrap; }
+.tab { border: 1px solid var(--line); background: transparent; padding: 6px 12px; border-radius: 8px; cursor: pointer; font-size: 0.9rem; }
+.tab[aria-selected="true"] { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; border: 0; border-radius: 10px; padding: 12px 22px; font-weight: 600; cursor: pointer; background: var(--leaf); color: var(--paper); }
+.btn:hover { filter: brightness(1.08); }
+.btn[disabled] { opacity: 0.45; cursor: not-allowed; filter: none; }
+.btn.ghost { background: transparent; color: var(--ink); border: 1px solid var(--line); }
+.row { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
+
+/* urgency strip */
+.clock { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); border: 1px solid var(--chili); border-radius: 12px; overflow: hidden; background: var(--surface); }
+.clock > div { padding: 12px 14px; display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.clock > div + div { border-left: 1px solid var(--line); }
+.clock .big { font-family: var(--f-display); font-size: 1.45rem; font-weight: 800; color: var(--chili); line-height: 1.15; }
+.clock small { color: var(--muted); font-size: 0.82rem; line-height: 1.35; }
+@media (max-width: 480px) { .clock { grid-template-columns: 1fr; } .clock > div + div { border-left: 0; border-top: 1px solid var(--line); } }
+
+/* intro */
+.getlist { list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+.getlist li { border-top: 2px solid var(--leaf); padding-top: 8px; display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.getlist b { font-size: 0.98rem; } .getlist span { font-size: 0.88rem; color: var(--muted); }
+@media (max-width: 560px) { .getlist { grid-template-columns: 1fr; } }
+.choices { display: flex; flex-wrap: wrap; gap: 8px; }
+.pill { border: 1px solid var(--line); background: var(--surface); border-radius: 999px; padding: 7px 14px; cursor: pointer; font-size: 0.93rem; }
+.pill[aria-pressed="true"] { border-color: var(--leaf); background: var(--leaf-soft); color: var(--leaf); font-weight: 600; }
+.testbox { display: flex; gap: 10px; align-items: flex-start; padding: 12px 14px; border: 1px dashed var(--amber); border-radius: 10px; background: var(--amber-soft); font-size: 0.92rem; }
+
+/* quiz */
+.progress { display: grid; grid-template-columns: repeat(13, 1fr); gap: 3px; }
+.progress i { height: 5px; border-radius: 3px; background: var(--line); }
+.progress i.done { background: var(--leaf); }
+.progress i.now { background: var(--chili); }
+.qhead { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.qtext { font-family: var(--f-display); font-size: clamp(1.4rem, 4.5vw, 1.85rem); font-weight: 500; line-height: 1.25; text-wrap: balance; }
+.opts { display: flex; flex-direction: column; gap: 10px; }
+.opt { display: grid; grid-template-columns: 32px 1fr; gap: 12px; align-items: center; text-align: left; width: 100%; border: 1px solid var(--line); background: var(--surface); border-radius: 12px; padding: 14px 16px; cursor: pointer; transition: border-color .15s, background .15s; }
+.opt:hover { border-color: var(--leaf); }
+.opt .k { font-family: var(--f-mono); font-size: 0.85rem; width: 28px; height: 28px; border-radius: 50%; display: grid; place-items: center; border: 1px solid var(--line); color: var(--muted); }
+.opt[aria-pressed="true"] { border-color: var(--leaf); background: var(--leaf-soft); }
+.opt[aria-pressed="true"] .k { background: var(--leaf); color: var(--paper); border-color: var(--leaf); }
+.qfoot { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; align-items: center; }
+.hint { font-size: 0.85rem; color: var(--muted); }
+
+/* score */
+.scorebox { display: grid; grid-template-columns: auto 1fr; gap: 20px; align-items: center; }
+@media (max-width: 480px) { .scorebox { grid-template-columns: 1fr; gap: 10px; } }
+.score { font-family: var(--f-display); font-size: clamp(4.4rem, 18vw, 6.4rem); font-weight: 800; line-height: 0.9; }
+.score small { font-size: 1.1rem; font-weight: 500; color: var(--muted); margin-left: 4px; }
+.band { align-self: flex-start; font-family: var(--f-mono); font-size: 0.78rem; letter-spacing: 0.06em; text-transform: uppercase; padding: 4px 10px; border-radius: 6px; color: var(--paper); }
+.b-actnow { background: var(--chili); } .b-exposed { background: var(--amber); } .b-prepared { background: var(--good); }
+.s-actnow { color: var(--chili); } .s-exposed { color: var(--amber); } .s-prepared { color: var(--good); }
+.scale { position: relative; height: 34px; }
+.scale .track { position: absolute; left: 0; right: 0; top: 6px; height: 10px; display: grid; grid-template-columns: 40fr 25fr 35fr; gap: 2px; border-radius: 5px; overflow: hidden; }
+.scale .track span:nth-child(1) { background: var(--chili); } .scale .track span:nth-child(2) { background: var(--amber); } .scale .track span:nth-child(3) { background: var(--good); }
+.scale .mark { position: absolute; top: 0; width: 4px; height: 22px; margin-left: -2px; background: var(--ink); border-radius: 2px; }
+.scale .ticks { position: absolute; left: 0; right: 0; top: 20px; font-family: var(--f-mono); font-size: 0.7rem; color: var(--muted); }
+.scale .ticks span { position: absolute; transform: translateX(-50%); }
+.scale .ticks span:first-child { transform: none; } .scale .ticks span:last-child { transform: translateX(-100%); }
+.split { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.split > div { display: flex; flex-direction: column; gap: 4px; }
+.split .t { height: 6px; background: var(--line); border-radius: 3px; overflow: hidden; } .split .f { height: 100%; background: var(--ink); }
+
+/* stress test */
+.panel { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 20px; display: flex; flex-direction: column; gap: 18px; }
+.panel-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
+.seg { display: inline-flex; border: 1px solid var(--line); border-radius: 9px; overflow: hidden; }
+.seg button { border: 0; background: transparent; padding: 6px 12px; cursor: pointer; font-size: 0.88rem; }
+.seg button[aria-pressed="true"] { background: var(--ink); color: var(--paper); }
+.vs { display: grid; grid-template-columns: 1fr auto 1fr; gap: 12px; align-items: center; }
+.vs > div { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.vs .money { font-family: var(--f-display); font-size: clamp(1.6rem, 6vw, 2.2rem); font-weight: 800; line-height: 1.1; overflow-wrap: anywhere; }
+.vs .arrow { font-family: var(--f-mono); color: var(--chili); font-size: 1.4rem; }
+.loss { color: var(--chili); }
+.hit { border-radius: 10px; background: var(--chili-soft); padding: 12px 14px; font-family: var(--f-display); font-size: 1.2rem; font-weight: 700; line-height: 1.3; }
+.water { display: flex; flex-direction: column; gap: 8px; }
+.wrow { display: grid; grid-template-columns: minmax(0, 180px) 1fr minmax(84px, auto); gap: 10px; align-items: center; font-size: 0.92rem; }
+.wrow .t { height: 14px; position: relative; }
+.wrow .f { position: absolute; top: 0; height: 100%; border-radius: 3px; }
+.wrow .v { text-align: right; font-family: var(--f-mono); font-size: 0.85rem; }
+.f-base { background: var(--leaf); } .f-neg { background: var(--chili); } .f-end { background: var(--ink); }
+@media (max-width: 520px) { .wrow { grid-template-columns: 1fr minmax(76px, auto); } .wrow .t { grid-column: 1 / -1; grid-row: 2; } }
+.detail { font-size: 0.9rem; color: var(--muted); display: flex; flex-direction: column; gap: 4px; border-top: 1px solid var(--line); padding-top: 12px; }
+
+/* timeline */
+.timeline { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0; }
+.timeline li { border-top: 3px solid var(--line); padding: 10px 14px 0 0; display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.timeline li.now { border-top-color: var(--chili); }
+.timeline b { font-size: 0.98rem; } .timeline span { font-size: 0.9rem; color: var(--muted); }
+@media (max-width: 560px) { .timeline { grid-template-columns: 1fr; gap: 12px; } }
+
+/* plays */
+.plays { display: flex; flex-direction: column; gap: 14px; }
+.play { border: 1px solid var(--line); background: var(--surface); border-radius: 14px; padding: 18px; display: flex; flex-direction: column; gap: 10px; }
+.play .ptop { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+.play .pname { font-family: var(--f-display); font-size: 1.25rem; font-weight: 700; }
+.ptag { font-family: var(--f-mono); font-size: 0.7rem; letter-spacing: 0.06em; text-transform: uppercase; padding: 3px 8px; border-radius: 5px; }
+.ptag.urgent { background: var(--chili-soft); color: var(--chili); } .ptag.opp { background: var(--leaf-soft); color: var(--leaf); }
+.play .why { font-weight: 600; }
+.play .cust { border-top: 1px solid var(--line); padding-top: 10px; font-size: 0.93rem; }
+.play .cust b { color: var(--leaf); }
+
+.locked-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+.lock { border: 1px dashed var(--line); border-radius: 12px; padding: 14px; display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.lock b { display: flex; align-items: center; gap: 8px; } .lock svg { flex: none; }
+.lock span { font-size: 0.88rem; color: var(--muted); }
+@media (max-width: 520px) { .locked-grid { grid-template-columns: 1fr; } }
+
+.pull { border-left: 3px solid var(--chili); padding: 4px 0 4px 16px; font-family: var(--f-display); font-size: 1.25rem; font-weight: 500; line-height: 1.35; }
+.cta { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 22px; display: flex; flex-direction: column; gap: 16px; }
+.grid2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+@media (max-width: 560px) { .grid2 { grid-template-columns: 1fr; } }
+.field { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.field label { font-size: 0.85rem; font-weight: 600; }
+.field input, .field select { border: 1px solid var(--line); background: var(--paper); border-radius: 8px; padding: 10px 12px; width: 100%; }
+.consent { display: flex; gap: 10px; align-items: flex-start; font-size: 0.88rem; color: var(--muted); }
+.consent input { margin-top: 4px; }
+.msg { font-size: 0.92rem; padding: 10px 12px; border-radius: 8px; }
+.msg.ok { background: var(--leaf-soft); color: var(--leaf); } .msg.err { background: var(--amber-soft); color: var(--ink); }
+
+/* owner */
+.tablewrap { overflow-x: auto; border: 1px solid var(--line); border-radius: 12px; background: var(--surface); }
+table { border-collapse: collapse; width: 100%; font-size: 0.88rem; }
+th, td { text-align: left; padding: 9px 12px; border-bottom: 1px solid var(--line); vertical-align: top; }
+th { font-family: var(--f-mono); font-size: 0.7rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); font-weight: 500; white-space: nowrap; }
+tr:last-child td { border-bottom: 0; }
+td select { border: 1px solid var(--line); background: var(--paper); border-radius: 6px; padding: 4px 6px; font-size: 0.85rem; }
+.funnel { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px; }
+.funnel > div { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 14px; display: flex; flex-direction: column; gap: 2px; }
+.funnel .v { font-family: var(--f-display); font-size: 1.8rem; font-weight: 700; }
+.funnel small { color: var(--muted); font-size: 0.8rem; }
+code { font-family: var(--f-mono); font-size: 0.85em; background: var(--leaf-soft); color: var(--leaf); padding: 1px 6px; border-radius: 4px; word-break: break-all; }
+.note { font-size: 0.9rem; color: var(--muted); }
+.formula { font-family: var(--f-mono); font-size: 0.84rem; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 12px 14px; line-height: 1.7; overflow-x: auto; white-space: pre; }
+.playlib { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+@media (max-width: 560px) { .playlib { grid-template-columns: 1fr; } }
+.playlib .play { padding: 14px; gap: 6px; } .playlib .pname { font-size: 1.05rem; } .playlib p { font-size: 0.9rem; }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
+</style>
+
+<div class="wrap">
+  <div class="review" role="note"><b>Review copy for the Culinex team.</b> Try it as an F&amp;B operator, then send your feedback to Celestine at <span class="sel">celestine@piquantideas.com</span>. Nothing you enter here is saved.</div>
+  <header class="bar">
+    <div class="brand"><b>Piquant Ideas</b><span class="chip">F&amp;B edition</span></div>
+    <nav class="tabs" id="tabs" hidden>
+      <button class="tab" data-view="score" aria-selected="true">Scorecard</button>
+      <button class="tab" data-view="logic" aria-selected="false">Scoring logic</button>
+      <button class="tab" data-view="plays" aria-selected="false">Play Library</button>
+      <button class="tab" data-view="resp" aria-selected="false">Responses</button>
+    </nav>
+  </header>
+
+  <!-- INTRO -->
+  <section id="v-intro" class="stack-lg">
+    <div class="stack">
+      <p class="eyebrow">2027 Margin Stress Test · for F&amp;B operators</p>
+      <h1>What will 2027 do to your profit?</h1>
+      <p class="muted" style="max-width:60ch">Two things hit Singapore F&amp;B next year at the same time: a food-cost wave driven by a strong El Ni&ntilde;o, and the RTS Link putting Johor Bahru five minutes from Woodlands. Find out what they mean for your margin, in dollars.</p>
+    </div>
+    <div class="clock" id="clock-intro"></div>
+    <ul class="getlist">
+      <li><b>Your 2027 stress test</b><span>Profit per month today, and after both shocks.</span></li>
+      <li><b>A score out of 100</b><span>How ready you are. Higher is safer.</span></li>
+      <li><b>Three moves to make now</b><span>Matched to your answers, with your customers in mind.</span></li>
+    </ul>
+    <div class="stack-sm">
+      <h3>What kind of F&amp;B business do you run?</h3>
+      <div class="choices" id="pick-type" role="group" aria-label="Type of F&amp;B business"></div>
+      <p class="note">13 multiple-choice questions, about 3 minutes. The money questions use ranges, so you never enter exact figures.</p>
+    </div>
+    <label class="testbox" id="testbox" hidden><input type="checkbox" id="is-test" checked> <span><b>Mark as a test run.</b> Only you see this. Test runs are kept apart from real leads in Responses.</span></label>
+    <div class="row">
+      <button class="btn" id="start" disabled>Start the stress test</button>
+      <span class="hint" id="start-hint">Choose your business type to begin.</span>
+    </div>
+  </section>
+
+  <!-- QUIZ -->
+  <section id="v-quiz" class="stack-lg" hidden>
+    <div class="stack">
+      <div class="progress" id="progress" aria-hidden="true"></div>
+      <div class="qhead"><span class="eyebrow" id="q-count"></span><span class="eyebrow" id="q-group"></span></div>
+    </div>
+    <p class="qtext" id="q-text"></p>
+    <div class="opts" id="q-opts" role="group"></div>
+    <div class="qfoot">
+      <button class="btn ghost" id="back">Back</button>
+      <span class="hint">Pick the closest answer. Keys 1 to 5 work too.</span>
+    </div>
+  </section>
+
+  <!-- RESULTS -->
+  <section id="v-result" class="stack-lg" hidden>
+    <div class="clock" id="clock-result"></div>
+
+    <div class="stack">
+      <p class="eyebrow">Your 2027 resilience score</p>
+      <div class="scorebox">
+        <div class="score num" id="r-score"></div>
+        <div class="stack-sm"><span class="band" id="r-band"></span><h2 id="r-line" style="font-size:1.3rem"></h2></div>
+      </div>
+      <div class="scale" aria-hidden="true">
+        <div class="track"><span></span><span></span><span></span></div>
+        <div class="mark" id="r-mark"></div>
+        <div class="ticks"><span style="left:0">0</span><span style="left:40%">40</span><span style="left:65%">65</span><span style="left:100%">100</span></div>
+      </div>
+      <p class="note">Out of 100, and higher is safer. Below 40 means act now, 40 to 64 means exposed, 65 and above means prepared. Half the score comes from your margin stress test, half from how prepared you are.</p>
+      <div class="split">
+        <div><span class="eyebrow">Margin stress test</span><span class="num" id="r-sp"></span><div class="t"><div class="f" id="r-spf"></div></div></div>
+        <div><span class="eyebrow">Readiness</span><span class="num" id="r-rp"></span><div class="t"><div class="f" id="r-rpf"></div></div></div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-head">
+        <h3>Your 2027 margin stress test</h3>
+        <div class="seg" role="group" aria-label="Scenario">
+          <button type="button" id="sc-moderate" data-sc="moderate" aria-pressed="true">Moderate</button>
+          <button type="button" id="sc-severe" data-sc="severe" aria-pressed="false">Severe</button>
+        </div>
+      </div>
+      <div class="vs">
+        <div><span class="eyebrow">Profit per month today</span><span class="money" id="s-now"></span><span class="muted" id="s-now-m"></span></div>
+        <span class="arrow" aria-hidden="true">&rarr;</span>
+        <div><span class="eyebrow">In 2027</span><span class="money" id="s-after"></span><span class="muted" id="s-after-m"></span></div>
+      </div>
+      <p class="hit" id="s-hit"></p>
+      <div class="water" id="s-water"></div>
+      <div class="detail" id="s-detail"></div>
+    </div>
+
+    <div class="stack">
+      <h3>The window to act</h3>
+      <ol class="timeline">
+        <li class="now"><span class="eyebrow">Now to December 2026</span><b>Lock prices and stock</b><span>Buy forward before the price wave, and cost every dish at 2027 prices.</span></li>
+        <li><span class="eyebrow">February 2027</span><b>The RTS Link opens</b><span>Your reason for customers to stay needs to be clear before the first train runs.</span></li>
+        <li><span class="eyebrow">Through 2027</span><b>The food-cost wave</b><span>Operators who prepared take customers from those who didn't.</span></li>
+      </ol>
+    </div>
+
+    <div class="stack">
+      <div class="stack-sm"><h3>Three moves for your business</h3><p class="muted">Each one starts with what your customers get, because that is what keeps them buying.</p></div>
+      <div class="plays" id="r-plays"></div>
+    </div>
+
+    <div class="stack">
+      <div class="stack-sm">
+        <h3>Four more areas in the full audit</h3>
+        <p class="muted">The stress test covers food costs and the RTS. The paid Relevancy &amp; Resilience Audit also tests these, with research instead of estimates, and maps every move that fits your business.</p>
+      </div>
+      <div class="locked-grid" id="r-locked"></div>
+    </div>
+
+    <p class="pull">Your score tells you where you are exposed. It doesn't tell you what to do about it.</p>
+
+    <form class="cta" id="lead-form" novalidate>
+      <div class="stack-sm">
+        <h3>Book a free 30-minute Resilience Review</h3>
+        <p class="muted">We'll check the stress test against your real numbers and work out which of the three moves to start before December. No obligation.</p>
+      </div>
+      <div class="grid2">
+        <div class="field"><label for="f-name">Name</label><input id="f-name" autocomplete="name" required></div>
+        <div class="field"><label for="f-company">Business name</label><input id="f-company" autocomplete="organization" required></div>
+        <div class="field"><label for="f-email">Email</label><input id="f-email" type="email" autocomplete="email" required></div>
+        <div class="field"><label for="f-phone">Phone (optional)</label><input id="f-phone" type="tel" autocomplete="tel"></div>
+      </div>
+      <div class="field"><label for="f-src">How did you hear about us?</label>
+        <select id="f-src"><option value="">Choose one</option><option>LinkedIn</option><option>Facebook or Instagram</option><option>BNI</option><option>F&amp;B or industry association</option><option>Seminar or event</option><option>Referral</option><option>Other</option></select></div>
+      <label class="consent"><input type="checkbox" id="f-consent"> <span>I agree that Piquant Ideas may contact me about my result and related services. You can withdraw consent at any time.</span></label>
+      <div class="row"><button class="btn" type="submit" id="f-submit">Book my review</button><button class="btn ghost" type="button" id="retake">Retake the stress test</button></div>
+      <p class="msg" id="f-msg" hidden></p>
+    </form>
+  </section>
+
+  <!-- OWNER: LOGIC -->
+  <section id="v-logic" class="stack-lg" hidden>
+    <div class="stack">
+      <p class="eyebrow">Only you can see this tab</p>
+      <h2>How the F&amp;B stress test works</h2>
+      <p class="muted" style="max-width:62ch">Each money answer is a range, and the calculation uses its midpoint. These are illustrative estimates to start a conversation, not forecasts. Adjust the assumptions here once you have real client data.</p>
+    </div>
+    <div class="stack"><h3>The stress test</h3>
+      <div class="formula">Profit today      = monthly sales × net margin
+Extra food cost   = sales × food cost % × exposed share × shock (20% moderate, 35% severe)
+Absorbed          = extra food cost × (1 − share passable to customers)
+Sales lost to JB  = sales × location factor × how easily customers find it cheaper in JB
+Profit lost (RTS) = sales lost × (1 − food cost %)   rent and staff stay the same
+Profit in 2027    = profit today − absorbed − profit lost (RTS)</div>
+    </div>
+    <div class="stack"><h3>The score</h3>
+      <div class="formula">Stress points (0–50)    = margin in 2027 mapped from −5% → 0 to 12% → 50 (moderate scenario)
+Readiness points (0–50) = readiness answers (each 0–3, seven questions) ÷ 21 × 50
+Score                   = stress points + readiness points
+Bands                   = Act now below 40 · Exposed 40–64 · Prepared 65+</div>
+    </div>
+    <div class="stack"><h3>Which three moves are shown</h3>
+      <p class="note">Urgent moves come first: <b>Rebuild the concept</b> if the 2027 margin falls under 3%, then a move for each readiness answer scoring 0 or 1, then <b>Make the RTS work for you</b> if 2% or more of sales could cross the border. Remaining slots are filled with opportunities: the Mixue supply model, OEM production, packaged products, then supplying other kitchens.</p></div>
+    <div class="stack"><h3>Questions and assumptions</h3><div class="tablewrap"><table id="t-qs"></table></div></div>
+    <div class="stack"><h3>Tracking links</h3>
+      <p class="note">Add a tag after <code>#</code> on the link to record where a lead came from, for example <code>#facebook.elnino01</code> or <code>#rasa.association</code>. Use only letters, numbers, full stops, hyphens and underscores.</p></div>
+  </section>
+
+  <!-- OWNER: PLAYS -->
+  <section id="v-plays" class="stack-lg" hidden>
+    <div class="stack">
+      <p class="eyebrow">Only you can see this tab</p>
+      <h2>F&amp;B Play Library</h2>
+      <p class="muted" style="max-width:62ch">Each move starts with what the customer gets. The free stress test shows three. The full audit maps every one that fits.</p>
+    </div>
+    <div class="playlib" id="playlib"></div>
+  </section>
+
+  <!-- OWNER: RESPONSES -->
+  <section id="v-resp" class="stack-lg" hidden>
+    <div class="stack">
+      <p class="eyebrow">Only you can see this tab</p>
+      <h2>Responses and conversions</h2>
+      <label class="consent" style="color:var(--ink)"><input type="checkbox" id="show-tests"> <span>Include test runs</span></label>
+    </div>
+    <div class="funnel" id="funnel"></div>
+    <div class="stack"><h3>By source</h3><div class="tablewrap"><table id="t-src"></table></div></div>
+    <div class="stack"><h3>All responses</h3><p class="note">Lowest scores first, since they need the review most. Update the status as each lead moves from review to audit.</p><div class="tablewrap"><table id="t-resp"></table></div></div>
+    <p class="note" id="resp-empty">No responses yet. Take the stress test yourself as a test run and it will appear here.</p>
+  </section>
+</div>
+
+<script>
+// ===== Piquant 2027 Margin Stress Test · F&B edition · logic v1 =====
+// Score out of 100, higher is safer: half from the 2027 margin stress test, half from readiness.
+var SCENARIOS = {
+  moderate: { label: "Moderate", shock: 0.20, note: "Exposed ingredients cost 20% more through 2027" },
+  severe:   { label: "Severe",   shock: 0.35, note: "Exposed ingredients cost 35% more through 2027" }
+};
+var RTS_OPEN = "2027-02-01"; // RTS Link passenger service target: February 2027
+
+// kind: "rts" (location factor), "rev" (S$ per month), "food" (% of sales), "margin" (% net), "exposure" (share of food cost commodity-exposed),
+//       "pass" (share of cost rise passable to customers), "ready" (scored 0-3), "unique" (readiness 0-3 + JB substitutability)
+var QUESTIONS = [
+  { id: "L1", kind: "rts", group: "RTS", text: "Where is your main outlet?",
+    options: [["In the north: Woodlands, Marsiling, Admiralty, Sembawang or Yishun", 0.08], ["Another heartland estate", 0.04], ["CBD or an office area", 0.02], ["A mall or tourist area in town", 0.015]] },
+  { id: "L2", kind: "unique", group: "RTS", text: "Could your customers get similar food for less in Johor Bahru?",
+    options: [["Easily, and much cheaper", 0, 1.0], ["Something similar, a bit cheaper", 1, 0.6], ["Not quite the same", 2, 0.3], ["No. It's our own signature", 3, 0.1]] },
+  { id: "M1", kind: "rev", group: "Your numbers", text: "Roughly, what are your monthly sales across all outlets?",
+    options: [["Under S$30,000", 20000], ["S$30,000 to 80,000", 55000], ["S$80,000 to 200,000", 140000], ["S$200,000 to 500,000", 350000], ["Over S$500,000", 700000]] },
+  { id: "M2", kind: "food", group: "Your numbers", text: "What do food and ingredients cost you, as a share of sales?",
+    options: [["Under 25%", 0.22], ["25% to 30%", 0.28], ["30% to 35%", 0.33], ["35% to 40%", 0.38], ["Over 40%", 0.43]] },
+  { id: "M3", kind: "margin", group: "Your numbers", text: "What is your net profit margin today, after rent, staff and all costs?",
+    options: [["Breaking even or losing money", 0.0], ["1% to 5%", 0.03], ["5% to 10%", 0.075], ["10% to 15%", 0.125], ["Over 15%", 0.18]] },
+  { id: "M4", kind: "exposure", group: "Your numbers", text: "How much of your menu relies on rice, flour, sugar, cooking oil, beef, cocoa or coffee?",
+    options: [["Most of it", 0.9], ["About half", 0.6], ["Some of it", 0.35], ["Very little", 0.15]] },
+  { id: "M5", kind: "pass", group: "Your numbers", text: "If you raised prices 10% tomorrow, what would your customers do?",
+    options: [["Many would stop coming", 0.1], ["Some would leave", 0.3], ["Most would stay", 0.5], ["They'd barely notice", 0.7]] },
+  { id: "R1", kind: "ready", group: "Readiness", text: "Have you locked in prices or stocked up on key ingredients for 2027?",
+    options: [["Not yet", 0], ["We've started talking to suppliers", 1], ["Some prices are locked in", 2], ["Contracts are signed and stock is frozen", 3]], play: "F1" },
+  { id: "R2", kind: "ready", group: "Readiness", text: "Do you know the food cost of every dish, and which ones turn unprofitable if costs rise?",
+    options: [["No", 0], ["Roughly, in my head", 1], ["For our best-sellers", 2], ["Every item is costed and updated", 3]], play: "F7" },
+  { id: "R3", kind: "ready", group: "Readiness", text: "How is your food made?",
+    options: [["Each outlet cooks everything from scratch", 0], ["Some prep is done centrally", 1], ["Mostly in our own central kitchen", 2], ["Signature items are made by an OEM manufacturer and finished in store", 3]], play: "F2" },
+  { id: "R4", kind: "ready", group: "Readiness", text: "Do you earn anything beyond dine-in and takeaway?",
+    options: [["No", 0], ["Delivery apps only", 1], ["Some catering, retail packs or online sales", 2], ["Retail, frozen or export products bring in real revenue", 3]], play: "F3" },
+  { id: "R5", kind: "ready", group: "Readiness", text: "Do you know your regular customers, and can you reach them directly?",
+    options: [["No", 0], ["Only through social media followers", 1], ["We have a WhatsApp or loyalty list", 2], ["Yes, with a membership that shows what they buy", 3]], play: "F8" },
+  { id: "R6", kind: "ready", group: "Readiness", text: "Is your brand ready to grow beyond your own outlets?",
+    options: [["No, it's tied to us personally", 0], ["People have asked to franchise, but we're not prepared", 1], ["Recipes and SOPs are documented", 2], ["We already license, franchise or export", 3]], play: "F6" }
+];
+
+var BANDS = [
+  { key: "prepared", min: 65, label: "Prepared",
+    line: "You're better placed than most. Use 2027 to win the customers your competitors lose." },
+  { key: "exposed", min: 40, label: "Exposed",
+    line: "You'll stay open, but 2027 will take a big bite out of profit. Acting in the next three months protects most of it." },
+  { key: "actnow", min: 0, label: "Act now",
+    line: "On your own numbers, 2027 could push the business into losses. Act before the price wave and the RTS opening, not after." }
+];
+
+var PLAYS = {
+  F1: { name: "Lock today's prices, freeze for 2027",
+    how: "Buy forward or freeze three to six months of your most exposed ingredients before the 2027 price wave, and agree fixed-price contracts with key suppliers. Then tell customers you're holding prices while others raise theirs.",
+    customer: "Stable prices while everyone else raises theirs. That's a reason to choose you." },
+  F2: { name: "Make it once, heat it everywhere",
+    how: "Move your signature items to an OEM food manufacturer or a central kitchen. Outlets reheat and finish instead of cooking from scratch, and the same product is ready for supermarkets and export.",
+    customer: "The same taste in every bowl, served faster." },
+  F3: { name: "Sell the product, not just the seat",
+    how: "Turn your best-sellers into frozen or ready-to-heat packs for supermarkets, online shops, corporate catering and export. Customers who cross to JB can still take you home.",
+    customer: "Your food at home, at the office, or overseas." },
+  F4: { name: "Make the RTS work for you",
+    how: "From February 2027 the RTS can carry up to 10,000 people an hour each way through Woodlands North. Position for Johor visitors coming into Singapore, or open in Johor with Johor costs and a Singapore brand they already trust.",
+    customer: "Visitors get the Singapore brand they cross for. Locals find you on both sides of the border." },
+  F5: { name: "Rebuild the concept around what customers come for",
+    how: "Keep the three to five dishes customers actually come for, and redesign everything else around them: a smaller menu, counter or kiosk service, a smaller footprint, or a delivery-first kitchen.",
+    customer: "Faster, more consistent food at a price that holds." },
+  F6: { name: "The Mixue model: earn from the supply, not the fee",
+    how: "Mixue has over 46,000 stores, nearly all franchised, and over 90% of its revenue comes from selling ingredients and supplies to its franchisees, not from fees. Package your brand and SOPs, keep franchise fees low so partners sign quickly, and supply every outlet with your sauces, premixes and frozen items.",
+    customer: "Low prices in every outlet, because buying is done at scale." },
+  F7: { name: "Re-engineer the menu with your customers",
+    how: "Cost every dish at 2027 prices. Re-portion, swap the most exposed ingredients, and push high-margin items through sets. Lead with what customers already want, such as “less sweet” options that also cut sugar cost.",
+    customer: "Healthier choices and better-value sets." },
+  F8: { name: "Prepaid membership for regulars",
+    how: "Sell prepaid credits or monthly meal plans to regulars at a small discount, and use the cash to lock in ingredients now. It also gives regulars a reason to eat with you instead of crossing to JB.",
+    customer: "Better value for loyal customers." },
+  F9: { name: "Become a supplier to other kitchens",
+    how: "Sell your signature sauces, pastes or bases to other F&B operators, caterers and retailers, using kitchen time you already pay for.",
+    customer: "Your flavour reaches more people." }
+};
+var LOCKED = [
+  { label: "Manpower", q: "Can the business run with fewer staff as wages and levies rise?" },
+  { label: "Premises", q: "What happens to your margin at the next rent renewal?" },
+  { label: "Supply chain", q: "What if your main supplier couldn't deliver for 60 days?" },
+  { label: "Malaysia & ASEAN", q: "Should part of your production or outlets move across the border?" }
+];
+
+function money(n) { var v = Math.round(Math.abs(n) / 100) * 100; return (n < 0 ? "−" : "") + "S$" + v.toLocaleString("en-SG"); }
+function pick(answers, id) { var q = QUESTIONS.filter(function (x) { return x.id === id; })[0]; var i = answers[id]; return (q && i != null && q.options[i]) ? q.options[i] : null; }
+
+function stressTest(answers, scenarioKey) {
+  var sc = SCENARIOS[scenarioKey || "moderate"];
+  var R = pick(answers, "M1")[1], f = pick(answers, "M2")[1], m = pick(answers, "M3")[1];
+  var e = pick(answers, "M4")[1], p = pick(answers, "M5")[1];
+  var loc = pick(answers, "L1")[1], sub = pick(answers, "L2")[2];
+  var profitNow = R * m;
+  var foodRise = R * f * e * sc.shock;          // extra ingredient cost per month
+  var foodAbsorbed = foodRise * (1 - p);         // what price rises can't recover
+  var rtsShare = loc * sub;                      // share of sales lost to JB after RTS
+  var lostSales = R * rtsShare;
+  var rtsProfitHit = lostSales * (1 - f);        // contribution lost; rent and staff stay
+  var profitAfter = profitNow - foodAbsorbed - rtsProfitHit;
+  var revAfter = R - lostSales;
+  return {
+    revenue: R, profitNow: profitNow, marginNow: m,
+    foodRise: foodRise, foodAbsorbed: foodAbsorbed, rtsShare: rtsShare, lostSales: lostSales, rtsProfitHit: rtsProfitHit,
+    profitAfter: profitAfter, marginAfter: revAfter ? profitAfter / revAfter : 0,
+    yearlyHit: (foodAbsorbed + rtsProfitHit) * 12,
+    shareOfProfitLost: profitNow > 0 ? Math.min(1, (foodAbsorbed + rtsProfitHit) / profitNow) : 1
+  };
+}
+
+function scoreAnswers(answers) {
+  var st = stressTest(answers, "moderate");
+  var stressPts = Math.max(0, Math.min(50, (st.marginAfter * 100 + 5) / 17 * 50)); // -5% → 0, 12% → 50
+  var ready = 0, readyMax = 0, weak = [];
+  QUESTIONS.forEach(function (q) {
+    if (q.kind !== "ready" && q.kind !== "unique") return;
+    var o = pick(answers, q.id); if (!o) return;
+    ready += o[1]; readyMax += 3;
+    if (q.play && o[1] <= 1) weak.push(q.play);
+  });
+  var readyPts = readyMax ? ready / readyMax * 50 : 0;
+  var score = Math.round(stressPts + readyPts);
+  var band = BANDS.filter(function (b) { return score >= b.min; })[0];
+
+  // choose three plays: urgent ones (triggered by the answers) first, then opportunities
+  var urgent = {};
+  if (st.marginAfter < 0.03) urgent.F5 = true;
+  weak.forEach(function (p) { urgent[p] = true; });
+  if (st.rtsShare >= 0.02) urgent.F4 = true;
+  var ORDER = ["F5", "F1", "F4", "F2", "F7", "F8", "F3", "F6", "F9"];
+  var plays = ORDER.filter(function (k) { return urgent[k]; }).map(function (k) { return { id: k, urgent: true }; });
+  ["F6", "F2", "F3", "F9"].forEach(function (k) {
+    if (plays.length < 3 && !plays.some(function (p) { return p.id === k; })) plays.push({ id: k, urgent: false });
+  });
+  return { score: score, band: band.key, stressPts: Math.round(stressPts), readyPts: Math.round(readyPts), stress: st, plays: plays.slice(0, 3) };
+}
+
+// Personal line for each play, using the owner's own figures.
+function playWhy(id, answers, st) {
+  var S = money;
+  var lvl = function (qid) { var o = pick(answers, qid); return o ? o[1] : 0; };
+  switch (id) {
+    case "F1": return "Locking six months at today's prices could protect about " + S(st.foodAbsorbed * 6) + " of the " + S(st.foodAbsorbed * 12) + " in extra ingredient cost you'd absorb in 2027.";
+    case "F2": return lvl("R3") <= 1 ? "You cook from scratch at each outlet, so every cost rise hits you in labour, space and wastage as well as ingredients." : "Your central production is halfway there. An OEM partner can make your signature items at a scale you could sell to supermarkets and export.";
+    case "F3": return lvl("R4") <= 1 ? "Almost all your revenue depends on seats and footfall, which is exactly what the RTS and rising rents put at risk." : "You already sell beyond the shop. Packaged products could become a second business that doesn't depend on rent or footfall.";
+    case "F4": return "We estimate about " + Math.round(st.rtsShare * 100) + "% of your sales, roughly " + S(st.lostSales) + " a month, could cross the border once the RTS opens.";
+    case "F5": return st.profitAfter < 0 ? "In the stress test you'd lose about " + S(-st.profitAfter) + " a month. Small fixes won't close that gap." : "Your margin falls to about " + (st.marginAfter * 100).toFixed(1) + "% in the stress test, too thin to absorb anything else going wrong.";
+    case "F6": return lvl("R6") >= 2 ? "Your recipes and SOPs are close to franchise-ready. The question is whether you earn from fees, or from supplying every outlet." : "Brands that people ask to franchise usually have something worth scaling. Build the supply side first, and the franchise pays for itself.";
+    case "F7": return "Without costing per dish, you won't know which items start losing money as prices rise until it shows up in the monthly accounts.";
+    case "F8": return "If prepaid plans brought in just 5% of monthly sales upfront, that's about " + S(st.revenue * 0.05) + " of cash to buy stock at today's prices.";
+    case "F9": return "Your kitchen and signature recipes can earn from other businesses' customers too.";
+  }
+  return "";
+}
+if (typeof module !== "undefined") module.exports = { money: money, SCENARIOS: SCENARIOS, QUESTIONS: QUESTIONS, BANDS: BANDS, PLAYS: PLAYS, LOCKED: LOCKED, stressTest: stressTest, scoreAnswers: scoreAnswers, playWhy: playWhy, RTS_OPEN: RTS_OPEN };
+
+</script>
+<script>
+(function () {
+  var TYPES = ["Hawker or coffee shop stall", "Café, bakery or dessert", "Casual dining restaurant", "Full-service or fine dining", "Chain of 3 or more outlets", "Central kitchen or food manufacturer"];
+  var STATUSES = [["completed", "Completed"], ["lead", "Contact given"], ["review", "Review booked"], ["proposal", "Audit proposed"], ["audit", "Audit won"], ["project", "Transformation project"], ["nofit", "Not a fit"]];
+  var RANK = { completed: 0, lead: 1, review: 2, proposal: 3, audit: 4, project: 5, nofit: -1 };
+  var KEYS = ["A", "B", "C", "D", "E"];
+  var LOCK_SVG = '<svg width="14" height="14" viewBox="0 0 16 16" aria-hidden="true"><rect x="3" y="7" width="10" height="7" rx="1.5" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M5.5 7V5a2.5 2.5 0 0 1 5 0v2" fill="none" stroke="currentColor" stroke-width="1.5"/></svg>';
+  var $ = function (id) { return document.getElementById(id); };
+  var esc = function (s) { return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; }); };
+  var pct = function (x) { return (x * 100).toFixed(1).replace(/\.0$/, "") + "%"; };
+
+  var state = { type: null, answers: {}, idx: 0, docRef: null, result: null, scenario: "moderate" };
+  var db = null, isOwner = false, leads = [], unsub = null;
+
+  var tag = (location.hash || "").replace(/^#/, ""), src = "", hook = "";
+  if (/^[A-Za-z0-9._~-]+$/.test(tag)) { var parts = tag.split("."); src = parts[0] || ""; hook = parts.slice(1).join(".") || ""; }
+
+  // countdown
+  function monthsTo(iso) { var t = new Date(iso + "T00:00:00"), n = new Date(); return Math.max(0, Math.round((t - n) / (1000 * 60 * 60 * 24 * 30.44))); }
+  function clockHTML() {
+    var m = monthsTo(RTS_OPEN);
+    var rts = m <= 0 ? "The RTS Link is open" : "RTS Link opens in about " + m + " month" + (m === 1 ? "" : "s");
+    return '<div><span class="eyebrow">Johor Bahru, five minutes away</span><span class="big">' + rts + '</span><small>Passenger service targeted for February 2027, up to 10,000 people an hour each way.</small></div>' +
+      '<div><span class="eyebrow">Food costs</span><span class="big">The price wave peaks in 2027</span><small>A strong El Niño is expected to push up rice, sugar, wheat and other staples through next year.</small></div>';
+  }
+  $("clock-intro").innerHTML = clockHTML();
+
+  // intro
+  $("pick-type").innerHTML = TYPES.map(function (t, i) { return '<button type="button" class="pill" id="type-' + i + '" aria-pressed="false">' + esc(t) + '</button>'; }).join("");
+  $("pick-type").addEventListener("click", function (e) {
+    var b = e.target.closest(".pill"); if (!b) return;
+    Array.prototype.forEach.call($("pick-type").children, function (c) { c.setAttribute("aria-pressed", c === b ? "true" : "false"); });
+    state.type = b.textContent; $("start").disabled = false; $("start-hint").hidden = true;
+  });
+  $("start").addEventListener("click", function () { state.answers = {}; state.idx = 0; show("quiz"); renderQ(); });
+
+  // views
+  var VIEWS = { intro: "v-intro", quiz: "v-quiz", result: "v-result", logic: "v-logic", plays: "v-plays", resp: "v-resp" };
+  var current = "intro", lastScoreView = "intro";
+  function show(v) {
+    Object.keys(VIEWS).forEach(function (k) { $(VIEWS[k]).hidden = k !== v; });
+    current = v; if (v === "intro" || v === "quiz" || v === "result") lastScoreView = v;
+    var tab = (v === "logic" || v === "plays" || v === "resp") ? v : "score";
+    Array.prototype.forEach.call(document.querySelectorAll(".tab"), function (t) { t.setAttribute("aria-selected", t.dataset.view === tab ? "true" : "false"); });
+    window.scrollTo(0, 0);
+  }
+  $("tabs").addEventListener("click", function (e) { var t = e.target.closest(".tab"); if (!t) return; if (t.dataset.view === "score") show(lastScoreView); else show(t.dataset.view); });
+
+  // quiz
+  function renderQ() {
+    var q = QUESTIONS[state.idx];
+    $("progress").innerHTML = QUESTIONS.map(function (_, i) { return '<i class="' + (i < state.idx ? "done" : i === state.idx ? "now" : "") + '"></i>'; }).join("");
+    $("q-count").textContent = "Question " + (state.idx + 1) + " of " + QUESTIONS.length;
+    $("q-group").textContent = q.group;
+    $("q-text").textContent = q.text;
+    $("q-opts").setAttribute("aria-label", q.text);
+    $("q-opts").innerHTML = q.options.map(function (o, i) {
+      return '<button type="button" class="opt" id="opt-' + i + '" data-i="' + i + '" aria-pressed="' + (state.answers[q.id] === i) + '"><span class="k">' + KEYS[i] + '</span><span>' + esc(o[0]) + '</span></button>';
+    }).join("");
+    $("back").textContent = state.idx === 0 ? "Back to start" : "Back";
+  }
+  var advancing = false;
+  function choose(i) {
+    var q = QUESTIONS[state.idx]; if (advancing || !q.options[i]) return;
+    state.answers[q.id] = i; renderQ(); advancing = true;
+    setTimeout(function () { advancing = false; if (state.idx < QUESTIONS.length - 1) { state.idx++; renderQ(); } else { finish(); } }, 260);
+  }
+  $("q-opts").addEventListener("click", function (e) { var b = e.target.closest(".opt"); if (b) choose(+b.dataset.i); });
+  document.addEventListener("keydown", function (e) {
+    if (current !== "quiz" || /INPUT|SELECT|TEXTAREA/.test(e.target.tagName)) return;
+    var n = parseInt(e.key, 10); if (n >= 1 && n <= 5) choose(n - 1);
+  });
+  $("back").addEventListener("click", function () { if (state.idx === 0) show("intro"); else { state.idx--; renderQ(); } });
+
+  // results
+  function renderStress() {
+    var st = stressTest(state.answers, state.scenario), sc = SCENARIOS[state.scenario];
+    ["moderate", "severe"].forEach(function (k) { $("sc-" + k).setAttribute("aria-pressed", k === state.scenario ? "true" : "false"); });
+    $("s-now").textContent = money(st.profitNow); $("s-now-m").textContent = pct(st.marginNow) + " margin";
+    $("s-after").textContent = money(st.profitAfter); $("s-after").className = "money" + (st.profitAfter < st.profitNow ? " loss" : "");
+    $("s-after-m").textContent = pct(st.marginAfter) + " margin";
+    var lostShare = st.shareOfProfitLost;
+    $("s-hit").textContent = st.profitAfter < 0
+      ? "You'd be losing about " + money(-st.profitAfter) + " a month. That's " + money(st.yearlyHit) + " a year taken out of the business."
+      : "That's " + money(st.yearlyHit) + " a year gone, about " + Math.round(lostShare * 100) + "% of your profit.";
+    var max = Math.max(st.profitNow, st.foodAbsorbed + st.rtsProfitHit, Math.abs(st.profitAfter), 1);
+    var w = function (v) { return Math.max(0.5, Math.abs(v) / max * 100); };
+    var rows = [
+      ["Profit today", st.profitNow, 0, "f-base", money(st.profitNow)],
+      ["Food costs you can't pass on", st.foodAbsorbed, Math.max(0, st.profitNow - st.foodAbsorbed), "f-neg", money(-st.foodAbsorbed)],
+      ["Customers lost to JB", st.rtsProfitHit, Math.max(0, st.profitNow - st.foodAbsorbed - st.rtsProfitHit), "f-neg", money(-st.rtsProfitHit)],
+      ["Profit in 2027", st.profitAfter, 0, "f-end", money(st.profitAfter)]
+    ];
+    $("s-water").innerHTML = rows.map(function (r) {
+      var left = r[0] === "Profit in 2027" && r[1] < 0 ? 0 : r[2] / max * 100;
+      return '<div class="wrow"><span>' + esc(r[0]) + '</span><div class="t"><div class="f ' + r[3] + '" style="left:' + left + '%;width:' + w(r[1]) + '%"></div></div><span class="v">' + r[4] + '</span></div>';
+    }).join("");
+    $("s-detail").innerHTML =
+      "<span><b>" + esc(sc.label) + " scenario:</b> " + esc(sc.note) + ". That adds about " + money(st.foodRise) + " a month to your ingredient bill, and you could pass about " + money(st.foodRise - st.foodAbsorbed) + " of it on through prices.</span>" +
+      "<span><b>RTS:</b> we estimate about " + pct(st.rtsShare) + " of sales, roughly " + money(st.lostSales) + " a month, crossing to JB. Rent and staff costs stay the same, so most of that comes straight off profit.</span>" +
+      "<span>An estimate from your answers, using range midpoints. Not a financial forecast. The score uses the moderate scenario.</span>";
+  }
+  document.querySelector(".seg").addEventListener("click", function (e) { var b = e.target.closest("button"); if (!b) return; state.scenario = b.dataset.sc; renderStress(); });
+
+  function finish() {
+    var r = scoreAnswers(state.answers); state.result = r; state.scenario = "moderate";
+    var band = BANDS.filter(function (b) { return b.key === r.band; })[0];
+    $("clock-result").innerHTML = clockHTML();
+    $("r-score").innerHTML = r.score + "<small>/100</small>"; $("r-score").className = "score num s-" + r.band;
+    $("r-band").className = "band b-" + r.band; $("r-band").textContent = band.label;
+    $("r-line").textContent = band.line;
+    $("r-mark").style.left = Math.max(1, Math.min(99, r.score)) + "%";
+    $("r-sp").textContent = r.stressPts + " of 50"; $("r-spf").style.width = (r.stressPts / 50 * 100) + "%";
+    $("r-rp").textContent = r.readyPts + " of 50"; $("r-rpf").style.width = (r.readyPts / 50 * 100) + "%";
+    renderStress();
+    $("r-plays").innerHTML = r.plays.map(function (p) {
+      var P = PLAYS[p.id];
+      return '<div class="play"><div class="ptop"><span class="pname">' + esc(P.name) + '</span><span class="ptag ' + (p.urgent ? "urgent" : "opp") + '">' + (p.urgent ? "Do this now" : "Opportunity") + '</span></div><p class="why">' + esc(playWhy(p.id, state.answers, r.stress)) + '</p><p>' + esc(P.how) + '</p><p class="cust"><b>For your customers:</b> ' + esc(P.customer) + '</p></div>';
+    }).join("");
+    $("r-locked").innerHTML = LOCKED.map(function (l) { return '<div class="lock"><b>' + LOCK_SVG + esc(l.label) + '</b><span>' + esc(l.q) + '</span></div>'; }).join("");
+    $("f-msg").hidden = true; $("f-submit").disabled = false;
+    show("result");
+    saveCompletion(r);
+  }
+  $("retake").addEventListener("click", function () { state.docRef = null; state.result = null; show("intro"); });
+
+  function baseRecord(r) {
+    var st = r.stress;
+    return {
+      created: new Date().toISOString(), edition: "fnb", version: 1, bizType: state.type, src: src, hook: hook,
+      test: isOwner ? $("is-test").checked : false, answers: state.answers, status: "completed",
+      score: r.score, band: r.band, stressPts: r.stressPts, readyPts: r.readyPts, plays: r.plays.map(function (p) { return p.id; }),
+      revenue: st.revenue, profitNow: Math.round(st.profitNow), profitAfter: Math.round(st.profitAfter), yearlyHit: Math.round(st.yearlyHit), rtsShare: st.rtsShare
+    };
+  }
+  function saveCompletion(r) {
+    state.docRef = null; if (!db) return;
+    db.collection("leads").add(baseRecord(r)).then(function (ref) { state.docRef = ref; }).catch(function () { state.docRef = null; });
+  }
+  $("lead-form").addEventListener("submit", function (e) {
+    e.preventDefault();
+    var name = $("f-name").value.trim(), company = $("f-company").value.trim(), email = $("f-email").value.trim(), m = $("f-msg");
+    if (!name || !company || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) { m.className = "msg err"; m.textContent = "Add your name, business name and a valid email so we can reach you."; m.hidden = false; return; }
+    if (!$("f-consent").checked) { m.className = "msg err"; m.textContent = "Tick the consent box so we're allowed to contact you."; m.hidden = false; return; }
+    var data = { name: name, company: company, email: email, phone: $("f-phone").value.trim(), heard: $("f-src").value, consent: true, contactAt: new Date().toISOString(), status: "lead" };
+    $("f-submit").disabled = true;
+    var done = function () { m.className = "msg ok"; m.textContent = "Thank you, " + name + ". We'll contact you within two working days to arrange your review."; m.hidden = false; };
+    var fail = function () { $("f-submit").disabled = false; m.className = "msg err"; m.textContent = "Your details couldn't be saved just now. Please try again in a moment."; m.hidden = false; };
+    if (!db) { $("f-submit").disabled = false; m.className = "msg ok"; m.textContent = "This is a review copy, so your details weren\u2019t saved. In the live version, this books the review."; m.hidden = false; return; }
+    var p = state.docRef ? state.docRef.update(data) : db.collection("leads").add(Object.assign(baseRecord(state.result), data)).then(function (ref) { state.docRef = ref; });
+    p.then(done, fail);
+  });
+
+  // owner: logic + plays
+  $("t-qs").innerHTML = "<thead><tr><th>#</th><th>Question</th><th>Answers and the value used</th><th>Used for</th></tr></thead><tbody>" + QUESTIONS.map(function (q) {
+    var use = { rts: "Location factor (share of sales at risk)", unique: "Readiness 0–3, and how much of the RTS risk applies", rev: "Monthly sales (midpoint)", food: "Food cost % (midpoint)", margin: "Net margin (midpoint)", exposure: "Share of food cost hit by the shock", pass: "Share of the cost rise passed to customers", ready: "Readiness 0–3" }[q.kind];
+    var opts = q.options.map(function (o) {
+      var v = q.kind === "rev" ? money(o[1]) : (q.kind === "ready" ? o[1] + " pts" : q.kind === "unique" ? o[1] + " pts · RTS ×" + o[2] : pct(o[1]));
+      return "<div>" + esc(o[0]) + " <span class='num muted'>(" + v + ")</span></div>";
+    }).join("");
+    return "<tr><td class='num'>" + q.id + "</td><td><b>" + esc(q.text) + "</b></td><td>" + opts + "</td><td>" + esc(use) + (q.play ? "<br><span class='muted'>Weak answer shows: " + esc(PLAYS[q.play].name) + "</span>" : "") + "</td></tr>";
+  }).join("") + "</tbody>";
+  $("playlib").innerHTML = Object.keys(PLAYS).map(function (id) {
+    var P = PLAYS[id];
+    return '<div class="play"><span class="pname">' + esc(P.name) + '</span><p>' + esc(P.how) + '</p><p class="note"><b>For customers:</b> ' + esc(P.customer) + '</p></div>';
+  }).join("");
+
+  // owner: responses
+  function renderResp() {
+    var rows = leads.filter(function (l) { return $("show-tests").checked || !l.d.test; });
+    rows.sort(function (a, b) { return (a.d.score || 0) - (b.d.score || 0); });
+    $("resp-empty").hidden = rows.length > 0;
+    var cnt = function (minRank) { return rows.filter(function (l) { return (RANK[l.d.status] || 0) >= minRank; }).length; };
+    var pc = function (a, b) { return b ? Math.round(a / b * 100) + "%" : "–"; };
+    var c0 = rows.length, c1 = cnt(1), c2 = cnt(2), c4 = cnt(4);
+    $("funnel").innerHTML = [["Completed", c0, ""], ["Gave contact", c1, pc(c1, c0) + " of completed"], ["Review booked", c2, pc(c2, c1) + " of contacts"], ["Audit won", c4, pc(c4, c2) + " of reviews"]].map(function (f) {
+      return '<div><span class="eyebrow">' + f[0] + '</span><span class="v num">' + f[1] + '</span><small>' + (f[2] || "&nbsp;") + '</small></div>';
+    }).join("");
+    var by = {};
+    rows.forEach(function (l) { var k = (l.d.src || "(no tag)") + (l.d.hook ? " · " + l.d.hook : ""); by[k] = by[k] || [0, 0, 0]; by[k][0]++; if ((RANK[l.d.status] || 0) >= 1) by[k][1]++; if ((RANK[l.d.status] || 0) >= 2) by[k][2]++; });
+    var keys = Object.keys(by).sort(function (a, b) { return by[b][0] - by[a][0]; });
+    $("t-src").innerHTML = "<thead><tr><th>Source · hook</th><th>Completed</th><th>Contact</th><th>Review</th></tr></thead><tbody>" + (keys.length ? keys.map(function (k) { return "<tr><td>" + esc(k) + "</td><td class='num'>" + by[k][0] + "</td><td class='num'>" + by[k][1] + "</td><td class='num'>" + by[k][2] + "</td></tr>"; }).join("") : "<tr><td colspan='4' class='muted'>Nothing yet.</td></tr>") + "</tbody>";
+    $("t-resp").innerHTML = "<thead><tr><th>Date</th><th>Who</th><th>Business</th><th>Score</th><th>Profit / month</th><th>Source</th><th>Status</th></tr></thead><tbody>" + rows.map(function (l) {
+      var d = l.d, date = d.created ? new Date(d.created).toLocaleDateString("en-SG", { day: "numeric", month: "short" }) : "";
+      var who = d.name ? "<b>" + esc(d.name) + "</b><br><span class='muted'>" + esc(d.company) + "</span><br><span class='muted'>" + esc(d.email) + (d.phone ? " · " + esc(d.phone) : "") + "</span>" : "<span class='muted'>No contact given</span>";
+      var band = BANDS.filter(function (b) { return b.key === d.band; })[0];
+      var sel = "<select id='st-" + esc(l.id) + "' data-id='" + esc(l.id) + "' aria-label='Status'>" + STATUSES.map(function (s) { return "<option value='" + s[0] + "'" + (d.status === s[0] ? " selected" : "") + ">" + s[1] + "</option>"; }).join("") + "</select>";
+      return "<tr><td class='num'>" + date + "</td><td>" + who + (d.test ? " <span class='chip'>Test</span>" : "") + "</td><td>" + esc(d.bizType || "") + "</td><td><b class='num s-" + esc(d.band) + "'>" + (d.score != null ? d.score : "–") + "</b><br><span class='muted'>" + esc(band ? band.label : "") + "</span></td><td class='num'>" + money(d.profitNow || 0) + "<br>→ <span class='" + ((d.profitAfter || 0) < (d.profitNow || 0) ? "loss" : "") + "'>" + money(d.profitAfter || 0) + "</span></td><td>" + esc(d.src || "–") + (d.hook ? "<br><span class='muted'>" + esc(d.hook) + "</span>" : "") + (d.heard ? "<br><span class='muted'>Said: " + esc(d.heard) + "</span>" : "") + "</td><td>" + sel + "</td></tr>";
+    }).join("") + "</tbody>";
+  }
+  $("show-tests").addEventListener("change", renderResp);
+  $("t-resp").addEventListener("change", function (e) {
+    var s = e.target.closest("select"); if (!s || !db) return; s.disabled = true;
+    db.doc("leads/" + s.dataset.id).update({ status: s.value }).then(function () { s.disabled = false; }, function () { s.disabled = false; });
+  });
+  renderResp();
+
+  // capabilities
+  if (window.claude && window.claude.use) {
+    window.claude.use("db").then(function (d) { db = d; }).catch(function () { db = null; });
+    window.claude.use("user").then(function (u) {
+      if (!u) return;
+      return u.isOwner().then(function (own) {
+        isOwner = !!own; if (!isOwner) return;
+        $("tabs").hidden = false; $("testbox").hidden = false;
+        return window.claude.use("db").then(function (d) {
+          db = d; if (!d || unsub) return;
+          unsub = d.collection("leads").orderBy("created", "desc").onSnapshot(function (snap) {
+            leads = snap.docs.map(function (x) { return { id: x.id, d: x.data() || {} }; }); renderResp();
+          }, function () {});
+        });
+      });
+    }).catch(function () {});
+  }
+})();
+</script>
+
+</body>
+</html>
