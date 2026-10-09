@@ -1,0 +1,13 @@
+{
+  "name": "biz-stress-test",
+  "private": true,
+  "description": "Piquant Relevance Index free scorecard: engine, build and tests",
+  "scripts": {
+    "build": "node build.js",
+    "test": "node engine/test.js",
+    "rescore": "node engine/rescore.js"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

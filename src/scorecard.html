@@ -1,0 +1,458 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="Free Piquant Relevance Index scorecard: see how exposed your business is over the next two years, in dollars.">
+<style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font:14px/1.5 system-ui,sans-serif}img{max-width:100%}[hidden]{display:none!important}</style>
+</head>
+<body>
+<title>Piquant Resilience Scorecard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Source+Sans+3:wght@400;600&family=IBM+Plex+Mono:wght@500&display=swap">
+<style>
+/* Layout: one narrow column. Intro → one question per screen → score, dollars, 8 dimensions, 3 plays, feedback, contact. */
+:root {
+  --paper: #f5f6f3; --surface: #ffffff; --ink: #1a1f1c; --muted: #5d6660; --line: #dadfd8;
+  --teal: #0e5a55; --teal-soft: #e2efec; --chili: #c8361d; --chili-soft: #f9e3de; --amber: #a86b0c; --amber-soft: #f7ecd6;
+  --good: #2f7d4f; --good-soft: #e3f1e8;
+  --f-display: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --f-body: "Source Sans 3", "Segoe UI", system-ui, sans-serif;
+  --f-mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --paper: #111513; --surface: #19201c; --ink: #e9eeea; --muted: #9ea9a2; --line: #2a332e;
+  --teal: #5bb9ae; --teal-soft: #173431; --chili: #f2795f; --chili-soft: #3b1d17; --amber: #e2a93c; --amber-soft: #382b13;
+  --good: #63c08f; --good-soft: #17301f; color-scheme: dark; } }
+:root[data-theme="dark"] {
+  --paper: #111513; --surface: #19201c; --ink: #e9eeea; --muted: #9ea9a2; --line: #2a332e;
+  --teal: #5bb9ae; --teal-soft: #173431; --chili: #f2795f; --chili-soft: #3b1d17; --amber: #e2a93c; --amber-soft: #382b13;
+  --good: #63c08f; --good-soft: #17301f; color-scheme: dark; }
+[hidden] { display: none !important; }
+body { background: var(--paper); color: var(--ink); font-family: var(--f-body); font-size: 16px; line-height: 1.55; }
+.wrap { max-width: 720px; margin: 0 auto; padding-inline: 20px; padding-block: 20px 64px; }
+h1, h2, h3 { font-family: var(--f-display); font-weight: 700; line-height: 1.12; margin: 0; text-wrap: balance; letter-spacing: -0.01em; }
+h1 { font-size: clamp(2rem, 6.5vw, 2.9rem); }
+h2 { font-size: 1.4rem; }
+h3 { font-size: 1.1rem; }
+p { margin: 0; }
+.muted { color: var(--muted); }
+.note { font-size: 0.9rem; color: var(--muted); }
+.eyebrow { font-family: var(--f-mono); font-size: 0.72rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+.num { font-family: var(--f-mono); font-variant-numeric: tabular-nums; }
+.stack { display: flex; flex-direction: column; gap: 16px; }
+.stack-sm { display: flex; flex-direction: column; gap: 8px; }
+.stack-lg { display: flex; flex-direction: column; gap: 36px; }
+button, input, select, textarea { font: inherit; color: inherit; }
+:focus-visible { outline: 2px solid var(--teal); outline-offset: 2px; }
+.bar { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 12px; padding-bottom: 16px; border-bottom: 1px solid var(--line); margin-bottom: 28px; }
+.bar b { font-family: var(--f-display); font-size: 1.15rem; }
+.chip { display: inline-flex; font-size: 0.8rem; padding: 3px 10px; border-radius: 999px; background: var(--teal-soft); color: var(--teal); font-weight: 600; }
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; border: 0; border-radius: 10px; padding: 12px 22px; font-weight: 600; cursor: pointer; background: var(--teal); color: var(--paper); }
+.btn:hover { filter: brightness(1.08); }
+.btn[disabled] { opacity: 0.45; cursor: not-allowed; filter: none; }
+.btn.ghost { background: transparent; color: var(--ink); border: 1px solid var(--line); }
+.row { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
+.choices { display: flex; flex-wrap: wrap; gap: 8px; }
+.pill { border: 1px solid var(--line); background: var(--surface); border-radius: 999px; padding: 7px 14px; cursor: pointer; font-size: 0.93rem; }
+.pill[aria-pressed="true"] { border-color: var(--teal); background: var(--teal-soft); color: var(--teal); font-weight: 600; }
+.cats { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; }
+.cat { text-align: left; border: 1px solid var(--line); background: var(--surface); border-radius: 12px; padding: 12px 14px; cursor: pointer; display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.cat b { font-size: 1rem; } .cat span { font-size: 0.85rem; color: var(--muted); }
+.cat[aria-pressed="true"] { border-color: var(--teal); background: var(--teal-soft); }
+.cat[aria-pressed="true"] b { color: var(--teal); }
+.group-label { font-size: 0.85rem; font-weight: 600; color: var(--muted); }
+.get { list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+.get li { border-top: 2px solid var(--teal); padding-top: 8px; display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.get b { font-size: 0.98rem; } .get span { font-size: 0.88rem; color: var(--muted); }
+@media (max-width: 560px) { .get { grid-template-columns: 1fr; } }
+
+/* quiz */
+.progress { display: flex; gap: 3px; }
+.progress i { flex: 1; height: 5px; border-radius: 3px; background: var(--line); }
+.progress i.done { background: var(--teal); } .progress i.now { background: var(--chili); }
+.qhead { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.qtext { font-family: var(--f-display); font-size: clamp(1.35rem, 4.5vw, 1.8rem); font-weight: 500; line-height: 1.25; text-wrap: balance; }
+.opts { display: flex; flex-direction: column; gap: 10px; }
+.opt { display: grid; grid-template-columns: 32px 1fr; gap: 12px; align-items: center; text-align: left; width: 100%; border: 1px solid var(--line); background: var(--surface); border-radius: 12px; padding: 14px 16px; cursor: pointer; transition: border-color .15s, background .15s; }
+.opt:hover { border-color: var(--teal); }
+.opt .k { font-family: var(--f-mono); font-size: 0.85rem; width: 28px; height: 28px; border-radius: 50%; display: grid; place-items: center; border: 1px solid var(--line); color: var(--muted); }
+.opt[aria-pressed="true"] { border-color: var(--teal); background: var(--teal-soft); }
+.opt[aria-pressed="true"] .k { background: var(--teal); color: var(--paper); border-color: var(--teal); }
+.qfoot { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; align-items: center; }
+
+/* results */
+.clock { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); border: 1px solid var(--chili); border-radius: 12px; overflow: hidden; background: var(--surface); }
+.clock > div { padding: 12px 14px; display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.clock > div + div { border-left: 1px solid var(--line); }
+.clock .big { font-family: var(--f-display); font-size: 1.3rem; font-weight: 800; color: var(--chili); line-height: 1.15; }
+.clock small { color: var(--muted); font-size: 0.82rem; }
+@media (max-width: 480px) { .clock { grid-template-columns: 1fr; } .clock > div + div { border-left: 0; border-top: 1px solid var(--line); } }
+.scorebox { display: grid; grid-template-columns: auto 1fr; gap: 20px; align-items: center; }
+@media (max-width: 480px) { .scorebox { grid-template-columns: 1fr; gap: 10px; } }
+.score { font-family: var(--f-display); font-size: clamp(4.4rem, 18vw, 6.2rem); font-weight: 800; line-height: 0.9; }
+.score small { font-size: 1.1rem; font-weight: 500; color: var(--muted); margin-left: 4px; }
+.band { align-self: flex-start; font-family: var(--f-mono); font-size: 0.78rem; letter-spacing: 0.06em; text-transform: uppercase; padding: 4px 10px; border-radius: 6px; color: var(--paper); }
+.b-actnow { background: var(--chili); } .b-exposed { background: var(--amber); } .b-prepared { background: var(--good); }
+.s-actnow { color: var(--chili); } .s-exposed { color: var(--amber); } .s-prepared { color: var(--good); }
+.scale { position: relative; height: 40px; }
+.scale .track { position: absolute; left: 0; right: 0; top: 10px; height: 10px; display: grid; grid-template-columns: 40fr 25fr 35fr; gap: 2px; border-radius: 5px; overflow: hidden; }
+.scale .track span:nth-child(1) { background: var(--chili); } .scale .track span:nth-child(2) { background: var(--amber); } .scale .track span:nth-child(3) { background: var(--good); }
+.scale .rng { position: absolute; top: 4px; height: 22px; border: 2px solid var(--ink); border-radius: 6px; opacity: 0.35; }
+.scale .mark { position: absolute; top: 2px; width: 4px; height: 26px; margin-left: -2px; background: var(--ink); border-radius: 2px; }
+.scale .ticks { position: absolute; left: 0; right: 0; top: 26px; font-family: var(--f-mono); font-size: 0.7rem; color: var(--muted); }
+.scale .ticks span { position: absolute; transform: translateX(-50%); }
+.scale .ticks span:first-child { transform: none; } .scale .ticks span:last-child { transform: translateX(-100%); }
+.split { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.split > div { display: flex; flex-direction: column; gap: 4px; }
+.split .t { height: 6px; background: var(--line); border-radius: 3px; overflow: hidden; } .split .f { height: 100%; background: var(--ink); }
+.panel { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 20px; display: flex; flex-direction: column; gap: 16px; }
+.panel-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
+.seg { display: inline-flex; border: 1px solid var(--line); border-radius: 9px; overflow: hidden; }
+.seg button { border: 0; background: transparent; padding: 6px 12px; cursor: pointer; font-size: 0.88rem; }
+.seg button[aria-pressed="true"] { background: var(--ink); color: var(--paper); }
+.vs { display: grid; grid-template-columns: 1fr auto 1fr; gap: 12px; align-items: center; }
+.vs > div { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.vs .money { font-family: var(--f-display); font-size: clamp(1.5rem, 6vw, 2.1rem); font-weight: 800; line-height: 1.1; overflow-wrap: anywhere; }
+.vs .arrow { font-family: var(--f-mono); color: var(--chili); font-size: 1.3rem; }
+.loss { color: var(--chili); }
+.hit { border-radius: 10px; background: var(--chili-soft); padding: 12px 14px; font-family: var(--f-display); font-size: 1.15rem; font-weight: 700; line-height: 1.3; }
+.threat { display: grid; grid-template-columns: 1fr auto; gap: 4px 12px; border-top: 1px solid var(--line); padding-top: 10px; }
+.threat b { font-size: 0.98rem; } .threat .v { font-family: var(--f-mono); color: var(--chili); text-align: right; }
+.threat p { grid-column: 1 / -1; font-size: 0.9rem; color: var(--muted); }
+.dims { display: flex; flex-direction: column; gap: 10px; }
+.dimrow { display: grid; grid-template-columns: minmax(0, 190px) 1fr 40px; gap: 12px; align-items: center; }
+.dimrow .t { height: 10px; background: var(--line); border-radius: 5px; overflow: hidden; } .dimrow .f { height: 100%; border-radius: 5px; }
+.dimrow .v { text-align: right; font-family: var(--f-mono); font-size: 0.85rem; }
+.dimrow span:first-child { font-size: 0.95rem; }
+@media (max-width: 520px) { .dimrow { grid-template-columns: minmax(0, 130px) 1fr 34px; } .dimrow span:first-child { font-size: 0.86rem; } }
+.lvl-good { background: var(--good); } .lvl-warn { background: var(--amber); } .lvl-bad { background: var(--chili); }
+.plays { display: flex; flex-direction: column; gap: 14px; }
+.play { border: 1px solid var(--line); background: var(--surface); border-radius: 14px; padding: 18px; display: flex; flex-direction: column; gap: 10px; }
+.play .ptop { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+.play .pname { font-family: var(--f-display); font-size: 1.22rem; font-weight: 700; }
+.ptag { font-family: var(--f-mono); font-size: 0.7rem; letter-spacing: 0.06em; text-transform: uppercase; padding: 3px 8px; border-radius: 5px; }
+.ptag.urgent { background: var(--chili-soft); color: var(--chili); } .ptag.opp { background: var(--teal-soft); color: var(--teal); }
+.play .why { font-weight: 600; } .play .cust { border-top: 1px solid var(--line); padding-top: 10px; font-size: 0.93rem; } .play .cust b { color: var(--teal); }
+.locked { border: 1px dashed var(--line); border-radius: 12px; padding: 16px; display: flex; flex-direction: column; gap: 8px; }
+.locked ul { margin: 0; padding-left: 18px; color: var(--muted); font-size: 0.93rem; }
+.pull { border-left: 3px solid var(--chili); padding: 4px 0 4px 16px; font-family: var(--f-display); font-size: 1.2rem; font-weight: 500; line-height: 1.35; }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 22px; display: flex; flex-direction: column; gap: 18px; }
+.grid2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+@media (max-width: 560px) { .grid2 { grid-template-columns: 1fr; } }
+.field { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+.field > label, .field > .lab { font-size: 0.9rem; font-weight: 600; }
+.field input, .field textarea { box-sizing: border-box; border: 1px solid var(--line); background: var(--paper); border-radius: 8px; padding: 10px 12px; width: 100%; }
+.field textarea { min-height: 72px; resize: vertical; }
+.consent { display: flex; gap: 10px; align-items: flex-start; font-size: 0.9rem; color: var(--muted); }
+.consent input { margin-top: 4px; }
+.msg { font-size: 0.92rem; padding: 10px 12px; border-radius: 8px; }
+.msg.ok { background: var(--teal-soft); color: var(--teal); } .msg.err { background: var(--amber-soft); color: var(--ink); }
+details { border-top: 1px solid var(--line); padding-top: 14px; }
+summary { cursor: pointer; font-weight: 600; }
+details .stack-sm { margin-top: 10px; font-size: 0.92rem; color: var(--muted); }
+code { font-family: var(--f-mono); font-size: 0.85em; background: var(--teal-soft); color: var(--teal); padding: 1px 6px; border-radius: 4px; }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+
+<div class="wrap">
+  <header class="bar"><b>Piquant Ideas</b><span class="chip" id="ver-chip"></span></header>
+
+  <!-- INTRO -->
+  <section id="v-intro" class="stack-lg">
+    <div class="stack">
+      <p class="eyebrow">Piquant Relevance Index · free scorecard</p>
+      <h1>How exposed is your business over the next two years?</h1>
+      <p class="muted" style="max-width:60ch">Rising costs, AI, the RTS Link and changing customers will hit Singapore businesses differently. Answer 12 to 17 quick questions and see what they could do to your profit, in dollars, and which moves to make first.</p>
+    </div>
+    <ul class="get">
+      <li><b>A score out of 100</b><span>Higher is safer, shown as a likely range.</span></li>
+      <li><b>Your profit under pressure</b><span>Per month, today and if the risks hit.</span></li>
+      <li><b>Three moves to make now</b><span>Matched to your answers.</span></li>
+    </ul>
+    <div class="stack-sm">
+      <h3>What does your business do?</h3>
+      <div class="cats" id="pick-industry" role="group" aria-label="Industry"></div>
+      <div class="field" id="sub-wrap" hidden><span class="lab" id="lab-sub">Which best describes your business?</span><div class="choices" id="pick-sub" role="group" aria-labelledby="lab-sub"></div></div>
+      <div class="field" id="other-wrap" hidden><label for="other-industry">What industry are you in?</label><input id="other-industry" placeholder="For example: logistics, education, interior design"></div>
+    </div>
+    <div class="stack-sm">
+      <h3>Why are you taking this?</h3>
+      <div class="choices" id="pick-role" role="group" aria-label="Why are you taking this">
+        <button type="button" class="pill" id="role-owner" data-v="Owner" aria-pressed="false">I'm checking my own business</button>
+        <button type="button" class="pill" id="role-reviewer" data-v="Reviewer" aria-pressed="false">I'm reviewing this for Piquant</button>
+      </div>
+      <p class="note" id="role-note" hidden>Thank you. Answer as if it were a real business you know well, and tell us at the end what felt off.</p>
+    </div>
+    <div class="row">
+      <button class="btn" id="start" disabled>Start the scorecard</button>
+      <span class="note" id="start-hint">Choose your industry and why you're taking it to begin.</span>
+    </div>
+  </section>
+
+  <!-- QUIZ -->
+  <section id="v-quiz" class="stack-lg" hidden>
+    <div class="stack">
+      <div class="progress" id="progress" aria-hidden="true"></div>
+      <div class="qhead"><span class="eyebrow" id="q-count"></span><span class="eyebrow" id="q-group"></span></div>
+    </div>
+    <p class="qtext" id="q-text"></p>
+    <div class="opts" id="q-opts" role="group"></div>
+    <div class="qfoot">
+      <button class="btn ghost" id="back">Back</button>
+      <span class="note">Pick the closest answer. Keys 1 to 5 work too.</span>
+    </div>
+  </section>
+
+  <!-- RESULT -->
+  <section id="v-result" class="stack-lg" hidden>
+    <div class="clock" id="clock" hidden></div>
+
+    <div class="stack">
+      <p class="eyebrow">Your Piquant Relevance Index</p>
+      <div class="scorebox">
+        <div class="score num" id="r-score"></div>
+        <div class="stack-sm"><span class="band" id="r-band"></span><h2 id="r-line"></h2></div>
+      </div>
+      <div class="scale" aria-hidden="true">
+        <div class="track"><span></span><span></span><span></span></div>
+        <div class="rng" id="r-rng"></div>
+        <div class="mark" id="r-mark"></div>
+        <div class="ticks"><span style="left:0">0</span><span style="left:40%">40</span><span style="left:65%">65</span><span style="left:100%">100</span></div>
+      </div>
+      <p class="note" id="r-range"></p>
+      <div class="split">
+        <div><span class="eyebrow">Readiness</span><span class="num" id="r-rp"></span><div class="t"><div class="f" id="r-rpf"></div></div></div>
+        <div><span class="eyebrow">Profit buffer</span><span class="num" id="r-bp"></span><div class="t"><div class="f" id="r-bpf"></div></div></div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-head">
+        <h3>Your profit under pressure</h3>
+        <div class="seg" id="seg" role="group" aria-label="Scenario" hidden>
+          <button type="button" id="sc-moderate" data-sc="moderate" aria-pressed="true">Moderate</button>
+          <button type="button" id="sc-severe" data-sc="severe" aria-pressed="false">Severe</button>
+        </div>
+      </div>
+      <div class="vs">
+        <div><span class="eyebrow">Profit per month today</span><span class="money" id="s-now"></span></div>
+        <span class="arrow" aria-hidden="true">&rarr;</span>
+        <div><span class="eyebrow">If these risks hit</span><span class="money" id="s-after"></span></div>
+      </div>
+      <p class="hit" id="s-hit"></p>
+      <div id="s-threats" class="stack-sm"></div>
+      <p class="note">The dollars show the full hit if each risk happens. The score weighs each one by how likely and how soon it is, so it moves less than the dollars. Estimates from your answers, using the middle of each range. Not a financial forecast.</p>
+    </div>
+
+    <div class="stack">
+      <div class="stack-sm"><h3>Across the 8 parts of your business</h3><p class="muted">How ready each part is, from your answers. 100 is fully ready.</p></div>
+      <div class="dims" id="r-dims"></div>
+    </div>
+
+    <div class="stack">
+      <div class="stack-sm"><h3>Three moves for your business</h3><p class="muted">Each one starts with what your customers get, because that is what keeps them buying.</p></div>
+      <div class="plays" id="r-plays"></div>
+    </div>
+
+    <div class="locked">
+      <b>What the full Relevancy &amp; Resilience Audit adds</b>
+      <ul>
+        <li>Every rating checked against interviews, market and competitor research, not just your answers</li>
+        <li>Every threat and opportunity sized in dollars, ranked, and given a response</li>
+        <li>All the moves that fit your business, and a roadmap for the next 3 years</li>
+      </ul>
+    </div>
+
+    <p class="pull">Your score tells you where you are exposed. It doesn't tell you what to do about it.</p>
+
+    <form class="card" id="fb-form" novalidate>
+      <div class="stack-sm"><h3>Help us sharpen this</h3><p class="muted">Two minutes. Your answers help us improve the scorecard for businesses like yours.</p></div>
+      <div class="field"><span class="lab" id="lab-felt">Did your result feel right?</span><div class="choices" id="fb-felt" role="group" aria-labelledby="lab-felt"></div></div>
+      <div class="field"><span class="lab" id="lab-worry">Which part of your business worries you most?</span><div class="choices" id="fb-worry" role="group" aria-labelledby="lab-worry"></div></div>
+      <div class="field"><label for="fb-change">What's the biggest change hitting your business in the next two years?</label><textarea id="fb-change"></textarea></div>
+      <div class="field"><label for="fb-other">What else affects your business that we didn't ask about?</label><textarea id="fb-other"></textarea></div>
+      <div class="field"><label for="fb-unclear">Was any question unclear, or any answer missing?</label><textarea id="fb-unclear"></textarea></div>
+
+      <div class="stack-sm" style="border-top:1px solid var(--line);padding-top:16px">
+        <h3>Book a free 30-minute Resilience Review</h3>
+        <p class="muted">Optional. Leave your details and we'll walk through your result with you.</p>
+      </div>
+      <div class="grid2">
+        <div class="field"><label for="f-name">Name</label><input id="f-name" autocomplete="name"></div>
+        <div class="field"><label for="f-company">Business name</label><input id="f-company" autocomplete="organization"></div>
+        <div class="field"><label for="f-email">Email</label><input id="f-email" type="email" autocomplete="email"></div>
+        <div class="field"><label for="f-phone">Phone</label><input id="f-phone" type="tel" autocomplete="tel"></div>
+      </div>
+      <label class="consent"><input type="checkbox" id="c-research"> <span>Piquant Ideas may use my answers, anonymously, to improve this scorecard and build industry benchmarks. Required to send.</span></label>
+      <label class="consent"><input type="checkbox" id="c-contact"> <span>Piquant Ideas may contact me about my result and related services. I can withdraw consent at any time.</span></label>
+      <div class="row"><button class="btn" type="submit" id="f-submit">Send</button><button class="btn ghost" type="button" id="retake">Retake the scorecard</button></div>
+      <p class="msg" id="f-msg" hidden></p>
+    </form>
+
+    <details>
+      <summary>How this score is calculated</summary>
+      <div class="stack-sm">
+        <p>The Piquant Relevance Index runs from 0 to 100, and higher is safer. Half is <b>Readiness</b>: how prepared each of the 8 parts of your business is, weighted for your industry. Half is the <b>Profit buffer</b>: how much margin is left after the risks ahead, each weighed by how likely and how soon it is.</p>
+        <p>Below 40 means act now, 40 to 64 means exposed, 65 and above means prepared. Because the score comes from your own answers, it is shown as a range of about 13 points either side. A full audit narrows that range with evidence.</p>
+        <p id="ver-line"></p>
+      </div>
+    </details>
+  </section>
+</div>
+
+<script>
+// ===== Piquant Relevance Index · free scorecard engine =====
+// Numbers mirror the library tabs of the PRI Scoring Workbook. Change them there first, then here.
+/*ENGINE*/
+
+</script>
+<script>
+(function () {
+  var SAVE_URL = "https://script.google.com/macros/s/AKfycby_1-FnON98wl2m8EaKzUk09HrbtfE83jR2e8o5DwsnSIgIzPS3ILS2SAyMajMHBXdd/exec"; // Google Apps Script web app that writes to the Responses tab.
+  var RTS_OPEN = "2027-02-01";
+  var BANDS = { actnow: ["Act now", "On your answers, the next two years could push the business into losses. Act before the pressure arrives."], exposed: ["Exposed", "You'll stay open, but the risks ahead take a big bite out of profit. Acting in the next few months protects most of it."], prepared: ["Prepared", "You're better placed than most. Use the next two years to win customers your competitors lose."] };
+  var KEYS = ["A", "B", "C", "D", "E"];
+  var $ = function (id) { return document.getElementById(id); };
+  var esc = function (s) { return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; }); };
+  var pct = function (x) { return (x * 100).toFixed(1).replace(/\.0$/, "") + "%"; };
+  var state = { industry: null, role: null, answers: {}, idx: 0, flow: [], result: null, scenario: "moderate", felt: null, worry: null, sent: false };
+  var tag = (location.hash || "").replace(/^#/, ""), src = "", hook = "";
+  if (/^[A-Za-z0-9._~-]+$/.test(tag)) { var parts = tag.split("."); src = parts[0] || ""; hook = parts.slice(1).join(".") || ""; }
+  $("ver-chip").textContent = "Library " + LIBRARY_VERSION;
+  $("ver-line").textContent = "Scoring library " + LIBRARY_VERSION + ".";
+
+  // intro
+  $("pick-industry").innerHTML = INDUSTRIES.map(function (g, i) {
+    return '<button type="button" class="cat" id="cat-' + i + '" data-v="' + esc(g.label) + '" aria-pressed="false"><b>' + esc(g.label) + '</b><span>' + esc(g.hint) + '</span></button>';
+  }).join("");
+  $("pick-industry").addEventListener("click", function (e) {
+    var b = e.target.closest(".cat"); if (!b) return;
+    Array.prototype.forEach.call(document.querySelectorAll(".cat"), function (c) { c.setAttribute("aria-pressed", c === b ? "true" : "false"); });
+    state.industry = b.dataset.v; state.sub = null; $("other-wrap").hidden = state.industry !== "Others";
+    var cat = INDUSTRIES.filter(function (g) { return g.label === state.industry; })[0];
+    $("sub-wrap").hidden = !(cat && cat.sub);
+    $("pick-sub").innerHTML = cat && cat.sub ? cat.sub.map(function (t, i) { return '<button type="button" class="pill" id="sub-' + i + '" aria-pressed="false">' + esc(t) + '</button>'; }).join("") : "";
+    check();
+    if (state.industry === "Others") $("other-industry").focus();
+  });
+  $("other-industry").addEventListener("input", check);
+  $("pick-sub").addEventListener("click", function (e) {
+    var b = e.target.closest(".pill"); if (!b) return;
+    Array.prototype.forEach.call($("pick-sub").children, function (c) { c.setAttribute("aria-pressed", c === b ? "true" : "false"); });
+    state.sub = b.textContent; check();
+  });
+  $("pick-role").addEventListener("click", function (e) {
+    var b = e.target.closest(".pill"); if (!b) return;
+    Array.prototype.forEach.call($("pick-role").children, function (c) { c.setAttribute("aria-pressed", c === b ? "true" : "false"); });
+    state.role = b.dataset.v; $("role-note").hidden = state.role !== "Reviewer"; check();
+  });
+  function check() { var ok = state.industry && state.role && (state.industry !== "Others" || $("other-industry").value.trim().length > 1) && ($("sub-wrap").hidden || !!state.sub); $("start").disabled = !ok; $("start-hint").hidden = !!ok; }
+  $("start").addEventListener("click", function () { state.industryText = state.industry === "Others" ? $("other-industry").value.trim() : (state.sub || state.industry); state.flow = FLOWS[packFor(state.industry)]; state.answers = {}; state.idx = 0; show("quiz"); renderQ(); });
+
+  var VIEWS = { intro: "v-intro", quiz: "v-quiz", result: "v-result" }, current = "intro";
+  function show(v) { Object.keys(VIEWS).forEach(function (k) { $(VIEWS[k]).hidden = k !== v; }); current = v; window.scrollTo(0, 0); }
+
+  // quiz
+  function renderQ() {
+    var id = state.flow[state.idx], q = Q[id];
+    $("progress").innerHTML = state.flow.map(function (_, i) { return '<i class="' + (i < state.idx ? "done" : i === state.idx ? "now" : "") + '"></i>'; }).join("");
+    $("q-count").textContent = "Question " + (state.idx + 1) + " of " + state.flow.length;
+    $("q-group").textContent = q.group;
+    $("q-text").textContent = q.text;
+    $("q-opts").setAttribute("aria-label", q.text);
+    $("q-opts").innerHTML = q.options.map(function (o, i) { return '<button type="button" class="opt" id="opt-' + i + '" data-i="' + i + '" aria-pressed="' + (state.answers[id] === i) + '"><span class="k">' + KEYS[i] + '</span><span>' + esc(o[0]) + '</span></button>'; }).join("");
+    $("back").textContent = state.idx === 0 ? "Back to start" : "Back";
+  }
+  var busy = false;
+  function choose(i) {
+    var id = state.flow[state.idx]; if (busy || !Q[id].options[i]) return;
+    state.answers[id] = i; renderQ(); busy = true;
+    setTimeout(function () { busy = false; if (state.idx < state.flow.length - 1) { state.idx++; renderQ(); } else { finish(); } }, 240);
+  }
+  $("q-opts").addEventListener("click", function (e) { var b = e.target.closest(".opt"); if (b) choose(+b.dataset.i); });
+  document.addEventListener("keydown", function (e) { if (current !== "quiz" || /INPUT|TEXTAREA/.test(e.target.tagName)) return; var n = parseInt(e.key, 10); if (n >= 1 && n <= 5) choose(n - 1); });
+  $("back").addEventListener("click", function () { if (state.idx === 0) show("intro"); else { state.idx--; renderQ(); } });
+
+  // results
+  function monthsTo(iso) { return Math.max(0, Math.round((new Date(iso + "T00:00:00") - new Date()) / (864e5 * 30.44))); }
+  function lvl(h) { return h >= 67 ? "good" : h >= 40 ? "warn" : "bad"; }
+  function whyLine(p, r) {
+    if (p.why === "margin") return r.profitIfHit < 0 ? "If these risks hit, you'd lose about " + money(-r.profitIfHit) + " a month. Small fixes won't close that gap." : "If these risks hit, your margin falls to about " + pct(r.profitIfHit / r.revenue) + ", too thin to absorb anything else.";
+    if (p.why === "rts") { var t = r.threats.filter(function (x) { return x.id === "S02"; })[0]; return "About " + money(t.full) + " of monthly profit is exposed to customers crossing to Johor Bahru."; }
+    if (p.why && Q[p.why]) { var q = Q[p.why], a = q.options[state.answers[p.why]][0]; return "You answered “" + a + "” to: " + q.text; }
+    return "An opportunity that fits businesses like yours.";
+  }
+  function renderStress() {
+    var r = score(state.industry, state.answers, state.scenario);
+    ["moderate", "severe"].forEach(function (k) { $("sc-" + k).setAttribute("aria-pressed", k === state.scenario ? "true" : "false"); });
+    $("s-now").textContent = money(r.profitNow);
+    $("s-after").textContent = money(r.profitIfHit); $("s-after").className = "money" + (r.profitIfHit < r.profitNow ? " loss" : "");
+    var yr = r.fullLoss * 12;
+    $("s-hit").textContent = r.profitIfHit < 0 ? "You'd be losing about " + money(-r.profitIfHit) + " a month. That's " + money(yr) + " a year taken out of the business." : "That's " + money(yr) + " a year, about " + Math.round(Math.min(1, r.profitNow > 0 ? r.fullLoss / r.profitNow : 1) * 100) + "% of your profit.";
+    $("s-threats").innerHTML = r.threats.map(function (t) { return '<div class="threat"><b>' + esc(t.label) + '</b><span class="v">' + money(-t.full) + ' / month</span><p>' + esc(t.detail) + '</p></div>'; }).join("");
+  }
+  $("seg").addEventListener("click", function (e) { var b = e.target.closest("button"); if (!b) return; state.scenario = b.dataset.sc; renderStress(); });
+
+  function finish() {
+    var r = score(state.industry, state.answers, "moderate"); state.result = r; state.scenario = "moderate"; state.sent = false;
+    var fnb = r.pack === "F&B", rtsPack = fnb || r.pack === "Wellness";
+    $("clock").hidden = !rtsPack; $("seg").hidden = !fnb;
+    if (rtsPack) { var m = monthsTo(RTS_OPEN); $("clock").innerHTML = '<div><span class="eyebrow">Johor Bahru, five minutes away</span><span class="big">' + (m > 0 ? "RTS Link opens in about " + m + " month" + (m === 1 ? "" : "s") : "The RTS Link is open") + '</span><small>Passenger service targeted for February 2027.</small></div>' + (fnb ? '<div><span class="eyebrow">Food costs</span><span class="big">The price wave peaks in 2027</span><small>A strong El Ni\u00f1o is expected to push up rice, sugar and wheat.</small></div>' : '<div><span class="eyebrow">Costs</span><span class="big">Wages and rent keep rising</span><small>Every cost rise you can\'t pass on comes straight off profit.</small></div>'); }
+    var p = Math.round(r.pri);
+    $("r-score").innerHTML = p + "<small>/100</small>"; $("r-score").className = "score num s-" + r.band;
+    $("r-band").className = "band b-" + r.band; $("r-band").textContent = BANDS[r.band][0];
+    $("r-line").textContent = BANDS[r.band][1];
+    $("r-mark").style.left = Math.max(1, Math.min(99, r.pri)) + "%";
+    $("r-rng").style.left = r.low + "%"; $("r-rng").style.width = (r.high - r.low) + "%";
+    $("r-range").textContent = "Likely between " + Math.round(r.low) + " and " + Math.round(r.high) + ", because the score comes from your own answers." + (r.could ? " You could be " + BANDS[r.could][0] + "." : "");
+    $("r-rp").textContent = r.readiness.toFixed(1) + " of 50"; $("r-rpf").style.width = (r.readiness / 50 * 100) + "%";
+    $("r-bp").textContent = r.buffer.toFixed(1) + " of 50"; $("r-bpf").style.width = (r.buffer / 50 * 100) + "%";
+    renderStress();
+    $("r-dims").innerHTML = LIB.dims.map(function (d) { var h = r.health[d.id]; return '<div class="dimrow"><span>' + esc(d.name) + '</span><div class="t"><div class="f lvl-' + lvl(h) + '" style="width:' + Math.max(2, h) + '%"></div></div><span class="v">' + Math.round(h) + '</span></div>'; }).join("");
+    $("r-plays").innerHTML = r.plays.map(function (pl) { var P = LIB.plays[pl.id]; return '<div class="play"><div class="ptop"><span class="pname">' + esc(P.pattern) + '</span><span class="ptag ' + (pl.urgent ? "urgent" : "opp") + '">' + (pl.urgent ? "Do this now" : "Opportunity") + '</span></div><p class="why">' + esc(whyLine(pl, r)) + '</p><p>' + esc(P.ex[r.pack]) + '</p><p class="cust"><b>For your customers:</b> ' + esc(P.gain) + '</p></div>'; }).join("");
+    $("f-msg").hidden = true; $("f-submit").disabled = false;
+    show("result");
+  }
+
+  // feedback pills
+  function pillGroup(el, list, key) {
+    el.innerHTML = list.map(function (t, i) { return '<button type="button" class="pill" id="' + key + '-' + i + '" aria-pressed="false">' + esc(t) + '</button>'; }).join("");
+    el.addEventListener("click", function (e) { var b = e.target.closest(".pill"); if (!b) return; Array.prototype.forEach.call(el.children, function (c) { c.setAttribute("aria-pressed", c === b ? "true" : "false"); }); state[key] = b.textContent; });
+  }
+  pillGroup($("fb-felt"), FEEDBACK.felt, "felt");
+  pillGroup($("fb-worry"), FEEDBACK.worry, "worry");
+
+  function record() {
+    var r = state.result, health = {};
+    LIB.dims.forEach(function (d) { health[d.name] = Math.round(r.health[d.id]); });
+    return {
+      submittedAt: new Date().toISOString(), libraryVersion: r.version, respondentType: state.role, category: state.industry, industry: state.industryText, sectorPack: r.pack,
+      source: src, hook: hook, answers: state.flow.map(function (id) { return { id: id, answer: Q[id].options[state.answers[id]][0] }; }),
+      pri: Math.round(r.pri * 10) / 10, rangeLow: Math.round(r.low), rangeHigh: Math.round(r.high), band: BANDS[r.band][0],
+      readiness: Math.round(r.readiness * 10) / 10, profitBuffer: Math.round(r.buffer * 10) / 10, dimensionHealth: health,
+      monthlyRevenue: r.revenue, monthlyProfit: Math.round(r.profitNow), monthlyProfitIfHit: Math.round(r.profitIfHit), monthlyExpectedLoss: Math.round(r.expectedLoss),
+      plays: r.plays.map(function (p) { return LIB.plays[p.id].pattern; }),
+      feedback: { resultFelt: state.felt, mostWorried: state.worry, biggestChange: $("fb-change").value.trim(), otherFactors: $("fb-other").value.trim(), unclear: $("fb-unclear").value.trim() },
+      contact: { name: $("f-name").value.trim(), business: $("f-company").value.trim(), email: $("f-email").value.trim(), phone: $("f-phone").value.trim() },
+      consentResearch: $("c-research").checked, consentContact: $("c-contact").checked
+    };
+  }
+  $("fb-form").addEventListener("submit", function (e) {
+    e.preventDefault();
+    var m = $("f-msg"), email = $("f-email").value.trim();
+    if (!$("c-research").checked) { m.className = "msg err"; m.textContent = "Tick the first box so we're allowed to use your answers."; m.hidden = false; return; }
+    if ($("c-contact").checked && !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) { m.className = "msg err"; m.textContent = "Add a valid email so we can reach you, or untick the contact box."; m.hidden = false; return; }
+    if (state.sent) { m.className = "msg ok"; m.textContent = "Already sent. Thank you."; m.hidden = false; return; }
+    var rec = record(); $("f-submit").disabled = true;
+    var ok = function () { state.sent = true; m.className = "msg ok"; m.textContent = "Thank you" + (rec.contact.name ? ", " + rec.contact.name : "") + ". Your answers have been sent." + (rec.consentContact ? " We'll be in touch within two working days." : ""); m.hidden = false; };
+    var fail = function () { $("f-submit").disabled = false; m.className = "msg err"; m.textContent = "Your answers couldn't be sent just now. Please try again in a moment."; m.hidden = false; };
+    if (!SAVE_URL) { state.sent = true; m.className = "msg ok"; m.textContent = "Thank you. This preview doesn't save answers yet; the shared link will."; m.hidden = false; return; }
+    fetch(SAVE_URL, { method: "POST", mode: "no-cors", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify(rec) }).then(ok, fail);
+  });
+  $("retake").addEventListener("click", function () { show("intro"); });
+})();
+</script>
+
+</body>
+</html>
