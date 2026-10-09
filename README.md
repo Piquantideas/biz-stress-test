@@ -2,7 +2,7 @@
 
 Review copy of Piquant Ideas' free scorecard for Singapore F&B operators. It estimates what the 2027 food-cost wave (El Niño) and the RTS Link opening (February 2027) could do to an operator's monthly profit, gives a resilience score out of 100, and suggests three moves to make now.
 
-**Live review link:** https://piquantideas.github.io/businessstresstest/
+**Live review link:** https://piquantideas.github.io/biz-stress-test/
 
 ## For reviewers
 
@@ -27,7 +27,7 @@ All figures are illustrative estimates, not financial forecasts.
 
 ## Piquant Resilience Scorecard (BNI pilot)
 
-**Link:** https://piquantideas.github.io/businessstresstest/scorecard/
+**Link:** https://piquantideas.github.io/biz-stress-test/scorecard/
 
 One free scorecard for Food & Beverage, Professional services, Beauty, health or wellness, E-commerce and Others, running on scoring library v1.1 (see the PRI Scoring Workbook). Add a tag after `#` to record where a respondent came from, for example `.../scorecard/#bni.pilot`.
 
