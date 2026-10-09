@@ -1,0 +1,6 @@
+# Response exports hold personal data. Never commit them; keep them outside the repo.
+*.csv
+exports/
+responses*.json
+.DS_Store
+node_modules/

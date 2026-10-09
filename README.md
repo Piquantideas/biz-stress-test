@@ -31,4 +31,6 @@ All figures are illustrative estimates, not financial forecasts.
 
 One free scorecard for Food & Beverage, Professional services, Beauty, health or wellness, E-commerce and Others, running on scoring library v1.1 (see the PRI Scoring Workbook). Add a tag after `#` to record where a respondent came from, for example `.../scorecard/#bni.pilot`.
 
-Submissions are sent to the workbook's Responses tab by the Apps Script in `apps-script/SaveResponses.gs`. The web app URL is set as `SAVE_URL` in `scorecard/index.html`. If the script is redeployed as a new deployment, update that URL.
+Submissions are sent to the workbook's Responses tab by the Apps Script in `apps-script/SaveResponses.gs`. The web app URL is set as `SAVE_URL` in `src/scorecard.html`. If the script is redeployed as a new deployment, update that URL and run `npm run build`.
+
+The scoring engine and library live in `engine/engine.js`; `scorecard/index.html` is built from it, so don't edit that file by hand. See [LOOP.md](LOOP.md) for how library changes are made, tested and released.
