@@ -1,4 +1,4 @@
-var LIBRARY_VERSION = "v1.2";
+var LIBRARY_VERSION = "v1.3";
 
 var LIB = {
   dims: [
@@ -18,7 +18,10 @@ var LIB = {
   timing: { 5: 1, 4: 1, 3: 0.7, 2: 0.4, 1: 0.2 },
   shocks: {
     S01: { name: "El Niño food-cost wave", confidence: "Medium", urgency: 4, moderate: 0.20, severe: 0.35 },
-    S02: { name: "RTS Link opens (Feb 2027)", confidence: "Low", urgency: 5 }
+    S02: { name: "RTS Link opens (Feb 2027)", confidence: "Low", urgency: 5 },
+    // Electricity and gas, as a share of sales: bottom of the 4-8% F&B benchmark range (no Singapore source yet).
+    // F&B only: Wellness and Others already ask for the total cost rise, which includes energy.
+    S06: { name: "Energy and oil price shock", confidence: "Low", urgency: 4, moderate: 0.10, severe: 0.25, utilitiesShare: { "F&B": 0.04 } }
   },
   plays: {
     P01: { pattern: "Risk swap", moves: "Payment shifts to after results",
@@ -200,6 +203,10 @@ function threats(pack, answers, scenario) {
     var share = val(answers, "LOC") * sub, lost = R * share;
     out.push({ id: "S02", label: "Customers lost to Johor Bahru", full: lost * (1 - f), conf: LIB.shockConfidence[s2.confidence], timing: LIB.timing[s2.urgency],
       detail: "About " + (share * 100).toFixed(1).replace(/\.0$/, "") + "% of sales (" + money(lost) + " a month) could cross the border once the RTS opens. Rent and staff stay the same." });
+    var s6 = LIB.shocks.S06, up6 = scenario === "severe" ? s6.severe : s6.moderate;
+    var energy = R * s6.utilitiesShare["F&B"] * up6, energyKept = energy * (1 - pass);
+    out.push({ id: "S06", label: "Energy costs you can't pass on", full: energyKept, conf: LIB.shockConfidence[s6.confidence], timing: LIB.timing[s6.urgency],
+      detail: "Electricity and gas up " + Math.round(up6 * 100) + "% adds about " + money(energy) + " a month; you could pass on about " + money(energy - energyKept) + "." });
   } else if (pack === "Services") {
     var ai = val(answers, "AI"), pr = val(answers, "PRESS");
     out.push({ id: "T-AI", label: "Fees lost to AI price pressure", full: R * ai * pr, conf: LIB.params.selfReportConfidence, timing: LIB.timing[3],
