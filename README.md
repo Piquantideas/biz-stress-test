@@ -2,7 +2,9 @@
 
 Review copy of Piquant Ideas' free scorecard for Singapore F&B operators. It estimates what the 2027 food-cost wave (El Niño) and the RTS Link opening (February 2027) could do to an operator's monthly profit, gives a resilience score out of 100, and suggests three moves to make now.
 
-**Live review link:** https://piquantideas.github.io/biz-stress-test/
+**Old review copy:** https://piquantideas.github.io/biz-stress-test/fnb-review-v0/ (kept for reference; saves nothing).
+
+The root link https://piquantideas.github.io/biz-stress-test/ now opens the main scorecard with Food & Beverage preselected and tagged `culinex`, so F&B reviewers' answers reach the workbook.
 
 ## For reviewers
 
@@ -29,7 +31,7 @@ All figures are illustrative estimates, not financial forecasts.
 
 **Link:** https://piquantideas.github.io/biz-stress-test/scorecard/
 
-One free scorecard for Food & Beverage, Professional services, Beauty, health or wellness, E-commerce and Others, running on scoring library v1.1 (see the PRI Scoring Workbook). Add a tag after `#` to record where a respondent came from, for example `.../scorecard/#bni.pilot`.
+One free scorecard for Food & Beverage, Professional services, Beauty, health or wellness, E-commerce and Others, running on scoring library v1.1 (see the PRI Scoring Workbook). Add a tag after `#` to record where a respondent came from, for example `.../scorecard/#bni.pilot`. Add `?industry=fnb` (or `services`, `wellness`, `ecommerce`, `others`) to preselect the industry, for example `.../scorecard/?industry=fnb#culinex`.
 
 Submissions are sent to the workbook's Responses tab by the Apps Script in `apps-script/SaveResponses.gs`. The web app URL is set as `SAVE_URL` in `src/scorecard.html`. If the script is redeployed as a new deployment, update that URL and run `npm run build`.
 
