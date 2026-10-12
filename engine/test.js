@@ -43,6 +43,15 @@ Object.entries(E.Q).forEach(([id, q]) => {
     }
   });
 });
+// A reworded question must keep the answer scores of the one it replaces, in the same order.
+Object.entries(E.Q).forEach(([id, q]) => {
+  if (!q.replaces) return;
+  const r = E.Q[q.replaces];
+  check(r, `${id} replaces unknown question ${q.replaces}`);
+  if (!r) return;
+  check(q.kind === r.kind && q.dim === r.dim, `${id} must keep the kind and area of ${q.replaces}`);
+  check(JSON.stringify(q.options.map((o) => o[1])) === JSON.stringify(r.options.map((o) => o[1])), `${id} must keep the answer scores of ${q.replaces}`);
+});
 Object.entries(E.LIB.plays).forEach(([id, p]) => {
   Object.keys(E.LIB.packs).forEach((pack) => check(p.ex[pack], `Play ${id} has no example for ${pack}`));
 });

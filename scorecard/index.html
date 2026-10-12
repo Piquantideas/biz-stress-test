@@ -304,7 +304,7 @@ code { font-family: var(--f-mono); font-size: 0.85em; background: var(--teal-sof
 <script>
 // ===== Piquant Relevance Index · free scorecard engine =====
 // Numbers mirror the library tabs of the PRI Scoring Workbook. Change them there first, then here.
-var LIBRARY_VERSION = "v1.1";
+var LIBRARY_VERSION = "v1.2";
 
 var LIB = {
   dims: [
@@ -362,7 +362,7 @@ var LIB = {
 
 // ---------- industries ----------
 var INDUSTRIES = [
-  { label: "Food & Beverage", pack: "F&B", hint: "Hawker stalls, kiosks, restaurants", sub: ["Hawker stall", "Kiosk", "Restaurant", "Other F&B"] },
+  { label: "Food & Beverage", pack: "F&B", hint: "Hawker stalls, kiosks, restaurants", sub: ["Hawker or coffee shop stall", "Café, bakery or dessert", "Kiosk", "Casual dining restaurant", "Full-service or fine dining", "Chain of 3 or more outlets", "Central kitchen or food manufacturer", "Other F&B"] },
   { label: "Professional services", pack: "Services", hint: "Agencies, consultancies, accounting, legal, IT, training",
     sub: ["Marketing or creative agency", "Consultancy or advisory", "Accounting, legal or corporate services", "IT or tech services", "Training or HR services", "Other professional services"] },
   { label: "Beauty, health or wellness", pack: "Wellness", hint: "Salons, spas, clinics, TCM, fitness, aesthetics",
@@ -376,6 +376,7 @@ function packFor(category) { for (var i = 0; i < INDUSTRIES.length; i++) if (IND
 // ---------- questions ----------
 // kind "ready": options [text, score 0-3, playId?]; scored into dim.
 // kind "num": options [text, value]; used by the stress test.
+// replaces: a reworded version of another question, with the same answer scores in the same order (used by rescore).
 var Q = {
   REV:  { kind: "num", group: "Your numbers", text: "Roughly, what are your monthly sales or revenue?",
     options: [["Under S$30,000", 20000], ["S$30,000 to 80,000", 55000], ["S$80,000 to 200,000", 140000], ["S$200,000 to 500,000", 350000], ["Over S$500,000", 700000]] },
@@ -417,6 +418,10 @@ var Q = {
     options: [["Not really", 0, "P05"], ["Only through social media followers", 1, "P05"], ["We keep a list we contact", 2], ["We track what each buys and talk to them regularly", 3]] },
   WHY: { kind: "ready", dim: "D2", group: "Proposition & Brand", text: "If a customer could get something similar for less elsewhere, why would they stay with you?",
     options: [["Honestly, price matters most", 0, "P09"], ["Mostly habit or our relationship", 1, "P03"], ["Our quality and track record", 2], ["A signature or specialism they can't get elsewhere", 3]] },
+  CUST_FNB: { kind: "ready", replaces: "CUST", dim: "D1", group: "Customer", text: "Do you know your regular customers, and can you reach them directly?",
+    options: [["No", 0, "P05"], ["Only through social media followers", 1, "P05"], ["We have a WhatsApp or loyalty list", 2], ["Yes, with a membership that shows what they buy", 3]] },
+  WHY_FNB: { kind: "ready", replaces: "WHY", dim: "D2", group: "Proposition & Brand", text: "Could your customers get similar food for less in Johor Bahru?",
+    options: [["Easily, and much cheaper", 0, "P09"], ["Something similar, a bit cheaper", 1, "P03"], ["Not quite the same", 2], ["No. It's our own signature", 3]] },
   REACH_FNB: { kind: "ready", dim: "D3", group: "Channels & Reach", text: "How do most customers find you?",
     options: [["Passing footfall at one location", 0, "P10"], ["Mostly delivery apps", 1, "P03"], ["Footfall plus our own social media and regulars list", 2], ["Several channels, including online orders we own", 3]] },
   REACH: { kind: "ready", dim: "D3", group: "Channels & Reach", text: "Where do most of your new customers come from?",
@@ -464,7 +469,7 @@ var Q = {
 };
 
 var FLOWS = {
-  "F&B": ["LOC", "REV", "FOOD", "MARGIN", "EXPOSED", "PASS", "CUST", "WHY", "REACH_FNB", "STREAMS_FNB", "SCALE_FNB", "CASH", "COSTING_FNB", "LOCK_FNB", "MAKE_FNB", "FOUNDER", "TECH"],
+  "F&B": ["LOC", "REV", "FOOD", "MARGIN", "EXPOSED", "PASS", "CUST_FNB", "WHY_FNB", "REACH_FNB", "STREAMS_FNB", "SCALE_FNB", "CASH", "COSTING_FNB", "LOCK_FNB", "MAKE_FNB", "FOUNDER", "TECH"],
   "Services": ["REV", "MARGIN", "PASS", "AI", "PRESS", "CUST", "WHY", "REACH", "RECUR", "TOP3", "CASH", "PRICING", "PARTNER", "FOUNDER", "TECH_SVC"],
   "Wellness": ["LOC_W", "REV", "MARGIN", "PASS", "COSTUP", "CUST", "WHY", "REACH_W", "STREAMS_W", "CASH", "PARTNER", "KEYPRAC", "FOUNDER", "TECH"],
   "E-commerce": ["REV", "MARGIN", "PASS", "ADSHARE", "ADUP", "OVERSEAS", "CUT", "CUST", "WHY", "REACH_E", "REPEAT", "CASH", "STOCK", "FOUNDER", "TECH"],
@@ -480,6 +485,12 @@ var FEEDBACK = {
 function money(n) { var v = Math.round(Math.abs(n) / 100) * 100; return (n < 0 ? "−" : "") + "S$" + v.toLocaleString("en-SG"); }
 function val(answers, id) { var q = Q[id], i = answers[id]; return (q && i != null && q.options[i]) ? q.options[i][1] : null; }
 
+// How replaceable the business is (0-3), from whichever version of the WHY question was asked. Defaults to 1.
+function whyScore(answers) {
+  var id = answers.WHY_FNB != null ? "WHY_FNB" : "WHY";
+  return answers[id] != null ? Q[id].options[answers[id]][1] : 1;
+}
+
 // ---------- stress test: returns threats with full monthly $ and expected $ ----------
 function threats(pack, answers, scenario) {
   var R = val(answers, "REV"), m = val(answers, "MARGIN"), pass = val(answers, "PASS");
@@ -490,7 +501,7 @@ function threats(pack, answers, scenario) {
     var rise = R * f * e * shock, absorbed = rise * (1 - pass);
     out.push({ id: "S01", label: "Food costs you can't pass on", full: absorbed, conf: LIB.shockConfidence[s1.confidence], timing: LIB.timing[s1.urgency],
       detail: "Exposed ingredients up " + Math.round(shock * 100) + "% adds about " + money(rise) + " a month; you could pass on about " + money(rise - absorbed) + "." });
-    var s2 = LIB.shocks.S02, why = answers.WHY != null ? Q.WHY.options[answers.WHY][1] : 1;
+    var s2 = LIB.shocks.S02, why = whyScore(answers);
     var sub = [1.0, 0.6, 0.3, 0.1][why];
     var share = val(answers, "LOC") * sub, lost = R * share;
     out.push({ id: "S02", label: "Customers lost to Johor Bahru", full: lost * (1 - f), conf: LIB.shockConfidence[s2.confidence], timing: LIB.timing[s2.urgency],
@@ -508,7 +519,7 @@ function threats(pack, answers, scenario) {
       detail: "About " + Math.round(ov * 100) + "% of your range faces cheaper overseas sellers, and you'd cut those prices about " + Math.round(cut * 100) + "%." });
   } else {
     if (pack === "Wellness") {
-      var s2w = LIB.shocks.S02, whyw = answers.WHY != null ? Q.WHY.options[answers.WHY][1] : 1;
+      var s2w = LIB.shocks.S02, whyw = whyScore(answers);
       var sharew = val(answers, "LOC_W") * [1.0, 0.6, 0.3, 0.1][whyw], lostw = R * sharew;
       out.push({ id: "S02", label: "Clients lost to Johor Bahru", full: lostw * LIB.params.wellnessContribution, conf: LIB.shockConfidence[s2w.confidence], timing: LIB.timing[s2w.urgency],
         detail: "About " + (sharew * 100).toFixed(1).replace(/\.0$/, "") + "% of sales (" + money(lostw) + " a month) could cross the border once the RTS opens. Rent and staff stay the same." });
@@ -610,6 +621,13 @@ if (typeof module !== "undefined" && module.exports) module.exports = { LIB: LIB
     Array.prototype.forEach.call($("pick-sub").children, function (c) { c.setAttribute("aria-pressed", c === b ? "true" : "false"); });
     state.sub = b.textContent; check();
   });
+  // A link can preselect the industry, e.g. scorecard/?industry=fnb#culinex
+  var PRESET = { fnb: "F&B", services: "Services", wellness: "Wellness", ecommerce: "E-commerce", others: "Default" };
+  var preset = (location.search.match(/[?&]industry=([a-z]+)/) || [])[1];
+  if (preset && PRESET[preset]) {
+    var pre = INDUSTRIES.filter(function (g) { return g.pack === PRESET[preset]; })[0];
+    if (pre) $("cat-" + INDUSTRIES.indexOf(pre)).click();
+  }
   $("pick-role").addEventListener("click", function (e) {
     var b = e.target.closest(".pill"); if (!b) return;
     Array.prototype.forEach.call($("pick-role").children, function (c) { c.setAttribute("aria-pressed", c === b ? "true" : "false"); });

@@ -15,7 +15,8 @@ report format) is the "PRI Refinement Loop: Brief for Claude Code" document; it 
 | `engine/test.js` | Library checks, build check and snapshot tests for all 5 packs. |
 | `engine/snapshots.json` | Recorded scores for the current `LIBRARY_VERSION`. |
 | `engine/rescore.js` | Re-scores exported responses with a proposed library. |
-| `index.html` | The older F&B review copy (Culinex). Separate engine; don't change unless asked. |
+| `index.html` | Redirects the root link to the scorecard with F&B preselected, tagged `culinex`. |
+| `fnb-review-v0/` | The older F&B review copy, kept for reference. Separate engine; saves nothing. |
 
 ## Commands
 

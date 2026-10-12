@@ -342,6 +342,13 @@ code { font-family: var(--f-mono); font-size: 0.85em; background: var(--teal-sof
     Array.prototype.forEach.call($("pick-sub").children, function (c) { c.setAttribute("aria-pressed", c === b ? "true" : "false"); });
     state.sub = b.textContent; check();
   });
+  // A link can preselect the industry, e.g. scorecard/?industry=fnb#culinex
+  var PRESET = { fnb: "F&B", services: "Services", wellness: "Wellness", ecommerce: "E-commerce", others: "Default" };
+  var preset = (location.search.match(/[?&]industry=([a-z]+)/) || [])[1];
+  if (preset && PRESET[preset]) {
+    var pre = INDUSTRIES.filter(function (g) { return g.pack === PRESET[preset]; })[0];
+    if (pre) $("cat-" + INDUSTRIES.indexOf(pre)).click();
+  }
   $("pick-role").addEventListener("click", function (e) {
     var b = e.target.closest(".pill"); if (!b) return;
     Array.prototype.forEach.call($("pick-role").children, function (c) { c.setAttribute("aria-pressed", c === b ? "true" : "false"); });
