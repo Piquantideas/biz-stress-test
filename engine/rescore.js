@@ -111,11 +111,15 @@ function run(a) {
     const category = String(r[COL.category]).trim();
     const { answers, missing } = toIndices(base, list);
     const flow = base.FLOWS[base.packFor(category)] || [];
-    if (!flow.length) { skipped.noFlow++; return; }
-    if (missing.length || flow.some((id) => answers[id] === undefined)) { skipped.unmatched++; return; }
     const nextFlow = next.FLOWS[next.packFor(category)] || [];
-    // A reworded question ("replaces") takes the answer given to the question it replaces, at the same position.
-    nextFlow.forEach((id) => { const rp = next.Q[id] && next.Q[id].replaces; if (answers[id] === undefined && rp && answers[rp] !== undefined) answers[id] = answers[rp]; });
+    if (!flow.length) { skipped.noFlow++; return; }
+    // A reworded question ("replaces") takes the answer given to the question it replaces, at the same position,
+    // so responses from older versions score under both engines.
+    [[base, flow], [next, nextFlow]].forEach(([eng, ids]) => ids.forEach((id) => {
+      const rp = eng.Q[id] && eng.Q[id].replaces;
+      if (answers[id] === undefined && rp && answers[rp] !== undefined) answers[id] = answers[rp];
+    }));
+    if (missing.length || flow.some((id) => answers[id] === undefined)) { skipped.unmatched++; return; }
     if (nextFlow.some((id) => answers[id] === undefined || !next.Q[id] || !next.Q[id].options[answers[id]])) { skipped.unmatched++; return; }
     const before = base.score(category, answers, "moderate"), after = next.score(category, answers, "moderate");
     results.push({ category, type, felt: String(r[COL.felt]).trim(), shown: Number(String(r[COL.pri]).replace(/[^0-9.\-]/g, "")),
