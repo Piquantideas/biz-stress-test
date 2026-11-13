@@ -1,12 +1,12 @@
 {
-  "version": "v1.3",
+  "version": "v1.4",
   "cases": {
     "F&B/first/moderate": {
-      "pri": 0.652,
+      "pri": 0.864,
       "band": "actnow",
       "readiness": 0,
-      "buffer": 0.652,
-      "profitIfHit": -2033,
+      "buffer": 0.864,
+      "profitIfHit": -1997,
       "plays": "P09,P10,P05"
     },
     "F&B/first/severe": {
@@ -14,39 +14,39 @@
       "band": "actnow",
       "readiness": 0,
       "buffer": 0,
-      "profitIfHit": -2675,
+      "profitIfHit": -2603,
       "plays": "P09,P10,P05"
     },
     "F&B/second/moderate": {
-      "pri": 34.7,
+      "pri": 34.864,
       "band": "actnow",
       "readiness": 16.667,
-      "buffer": 18.033,
-      "profitIfHit": -273,
+      "buffer": 18.198,
+      "profitIfHit": -196,
       "plays": "P09,P05,P04"
     },
     "F&B/second/severe": {
-      "pri": 31.093,
+      "pri": 31.422,
       "band": "actnow",
       "readiness": 16.667,
-      "buffer": 14.426,
-      "profitIfHit": -1474,
+      "buffer": 14.755,
+      "profitIfHit": -1320,
       "plays": "P09,P05,P04"
     },
     "F&B/middle/moderate": {
-      "pri": 47.264,
+      "pri": 47.429,
       "band": "exposed",
       "readiness": 16.667,
-      "buffer": 30.598,
-      "profitIfHit": 5102,
+      "buffer": 30.762,
+      "profitIfHit": 5298,
       "plays": "P05,P09,P04"
     },
     "F&B/middle/severe": {
-      "pri": 43.101,
+      "pri": 43.431,
       "band": "exposed",
       "readiness": 16.667,
-      "buffer": 26.435,
-      "profitIfHit": 1603,
+      "buffer": 26.764,
+      "profitIfHit": 1995,
       "plays": "P05,P09,P04"
     },
     "F&B/last/moderate": {
@@ -54,7 +54,7 @@
       "band": "prepared",
       "readiness": 50,
       "buffer": 50,
-      "profitIfHit": 121853,
+      "profitIfHit": 122273,
       "plays": "P02,P03,P05"
     },
     "F&B/last/severe": {
@@ -62,39 +62,39 @@
       "band": "prepared",
       "readiness": 50,
       "buffer": 50,
-      "profitIfHit": 118561,
+      "profitIfHit": 119401,
       "plays": "P02,P03,P05"
     },
     "F&B/mixed/moderate": {
-      "pri": 29.855,
+      "pri": 29.973,
       "band": "actnow",
       "readiness": 15,
-      "buffer": 14.855,
-      "profitIfHit": -3413,
+      "buffer": 14.973,
+      "profitIfHit": -3273,
       "plays": "P09,P10,P03"
     },
     "F&B/mixed/severe": {
-      "pri": 24.38,
+      "pri": 24.616,
       "band": "actnow",
       "readiness": 15,
-      "buffer": 9.38,
-      "profitIfHit": -7897,
+      "buffer": 9.616,
+      "profitIfHit": -7617,
       "plays": "P09,P10,P03"
     },
     "F&B/mixed-reverse/moderate": {
-      "pri": 84.5,
+      "pri": 84.665,
       "band": "prepared",
       "readiness": 35,
-      "buffer": 49.5,
-      "profitIfHit": 15478,
+      "buffer": 49.665,
+      "profitIfHit": 15674,
       "plays": "P05,P04,P03"
     },
     "F&B/mixed-reverse/severe": {
-      "pri": 83.394,
+      "pri": 83.724,
       "band": "prepared",
       "readiness": 35,
-      "buffer": 48.394,
-      "profitIfHit": 14405,
+      "buffer": 48.724,
+      "profitIfHit": 14797,
       "plays": "P05,P04,P03"
     },
     "Services/first/moderate": {
