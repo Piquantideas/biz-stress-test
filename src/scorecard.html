@@ -176,17 +176,9 @@ code { font-family: var(--f-mono); font-size: 0.85em; background: var(--teal-sof
       <div class="field" id="sub-wrap" hidden><span class="lab" id="lab-sub">Which best describes your business?</span><div class="choices" id="pick-sub" role="group" aria-labelledby="lab-sub"></div></div>
       <div class="field" id="other-wrap" hidden><label for="other-industry">What industry are you in?</label><input id="other-industry" placeholder="For example: logistics, education, interior design"></div>
     </div>
-    <div class="stack-sm">
-      <h3>Why are you taking this?</h3>
-      <div class="choices" id="pick-role" role="group" aria-label="Why are you taking this">
-        <button type="button" class="pill" id="role-owner" data-v="Owner" aria-pressed="false">I'm checking my own business</button>
-        <button type="button" class="pill" id="role-reviewer" data-v="Reviewer" aria-pressed="false">I'm reviewing this for Piquant</button>
-      </div>
-      <p class="note" id="role-note" hidden>Thank you. Answer as if it were a real business you know well, and tell us at the end what felt off.</p>
-    </div>
     <div class="row">
       <button class="btn" id="start" disabled>Start the scorecard</button>
-      <span class="note" id="start-hint">Choose your industry and why you're taking it to begin.</span>
+      <span class="note" id="start-hint">Choose your industry to begin.</span>
     </div>
   </section>
 
@@ -349,11 +341,8 @@ code { font-family: var(--f-mono); font-size: 0.85em; background: var(--teal-sof
     var pre = INDUSTRIES.filter(function (g) { return g.pack === PRESET[preset]; })[0];
     if (pre) $("cat-" + INDUSTRIES.indexOf(pre)).click();
   }
-  $("pick-role").addEventListener("click", function (e) {
-    var b = e.target.closest(".pill"); if (!b) return;
-    Array.prototype.forEach.call($("pick-role").children, function (c) { c.setAttribute("aria-pressed", c === b ? "true" : "false"); });
-    state.role = b.dataset.v; $("role-note").hidden = state.role !== "Reviewer"; check();
-  });
+  // Everyone is recorded as an Owner. Testers can use a link with ?role=reviewer so their answers stay out of calibration.
+  state.role = /[?&]role=reviewer\b/.test(location.search) ? "Reviewer" : "Owner";
   function check() { var ok = state.industry && state.role && (state.industry !== "Others" || $("other-industry").value.trim().length > 1) && ($("sub-wrap").hidden || !!state.sub); $("start").disabled = !ok; $("start-hint").hidden = !!ok; }
   $("start").addEventListener("click", function () { state.industryText = state.industry === "Others" ? $("other-industry").value.trim() : (state.sub || state.industry); state.flow = FLOWS[packFor(state.industry)]; state.answers = {}; state.idx = 0; show("quiz"); renderQ(); });
 
