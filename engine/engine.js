@@ -1,4 +1,4 @@
-var LIBRARY_VERSION = "v1.3";
+var LIBRARY_VERSION = "v1.4";
 
 var LIB = {
   dims: [
@@ -21,7 +21,7 @@ var LIB = {
     S02: { name: "RTS Link opens (Feb 2027)", confidence: "Low", urgency: 5 },
     // Electricity and gas, as a share of sales: bottom of the 4-8% F&B benchmark range (no Singapore source yet).
     // F&B only: Wellness and Others already ask for the total cost rise, which includes energy.
-    S06: { name: "Energy and oil price shock", confidence: "Low", urgency: 4, moderate: 0.10, severe: 0.25, utilitiesShare: { "F&B": 0.04 } }
+    S06: { name: "Energy and oil price shock", confidence: "Low", urgency: 4, moderate: 0.05, severe: 0.15, utilitiesShare: { "F&B": 0.04 } }
   },
   plays: {
     P01: { pattern: "Risk swap", moves: "Payment shifts to after results",
