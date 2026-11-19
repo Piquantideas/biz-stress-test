@@ -5,6 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="description" content="Free Piquant Relevance Index scorecard: see how exposed your business is over the next two years, in dollars.">
 <style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font:14px/1.5 system-ui,sans-serif}img{max-width:100%}[hidden]{display:none!important}</style>
+<!-- Anonymous usage analytics (GA4, same property as piquantideas.com). Counts starts, completions and sends; never sends answers or contact details. -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-9ZBVTYSW5N"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-9ZBVTYSW5N');</script>
 </head>
 <body>
 <title>Piquant Resilience Scorecard</title>
@@ -592,6 +595,7 @@ if (typeof module !== "undefined" && module.exports) module.exports = { LIB: LIB
   var BANDS = { actnow: ["Act now", "On your answers, the next two years could push the business into losses. Act before the pressure arrives."], exposed: ["Exposed", "You'll stay open, but the risks ahead take a big bite out of profit. Acting in the next few months protects most of it."], prepared: ["Prepared", "You're better placed than most. Use the next two years to win customers your competitors lose."] };
   var KEYS = ["A", "B", "C", "D", "E"];
   var $ = function (id) { return document.getElementById(id); };
+  var track = function (name, params) { try { if (typeof gtag === "function") gtag("event", name, params || {}); } catch (e) {} };
   var esc = function (s) { return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; }); };
   var pct = function (x) { return (x * 100).toFixed(1).replace(/\.0$/, "") + "%"; };
   var state = { industry: null, role: null, answers: {}, idx: 0, flow: [], result: null, scenario: "moderate", felt: null, worry: null, sent: false };
@@ -630,7 +634,7 @@ if (typeof module !== "undefined" && module.exports) module.exports = { LIB: LIB
   // Everyone is recorded as an Owner. Testers can use a link with ?role=reviewer so their answers stay out of calibration.
   state.role = /[?&]role=reviewer\b/.test(location.search) ? "Reviewer" : "Owner";
   function check() { var ok = state.industry && state.role && (state.industry !== "Others" || $("other-industry").value.trim().length > 1) && ($("sub-wrap").hidden || !!state.sub); $("start").disabled = !ok; $("start-hint").hidden = !!ok; }
-  $("start").addEventListener("click", function () { state.industryText = state.industry === "Others" ? $("other-industry").value.trim() : (state.sub || state.industry); state.flow = FLOWS[packFor(state.industry)]; state.answers = {}; state.idx = 0; show("quiz"); renderQ(); });
+  $("start").addEventListener("click", function () { state.industryText = state.industry === "Others" ? $("other-industry").value.trim() : (state.sub || state.industry); state.flow = FLOWS[packFor(state.industry)]; state.answers = {}; state.idx = 0; show("quiz"); renderQ(); track("stress_test_start", { industry: state.industry || "", source: src || "direct" }); });
 
   var VIEWS = { intro: "v-intro", quiz: "v-quiz", result: "v-result" }, current = "intro";
   function show(v) { Object.keys(VIEWS).forEach(function (k) { $(VIEWS[k]).hidden = k !== v; }); current = v; window.scrollTo(0, 0); }
@@ -695,6 +699,7 @@ if (typeof module !== "undefined" && module.exports) module.exports = { LIB: LIB
     $("r-plays").innerHTML = r.plays.map(function (pl) { var P = LIB.plays[pl.id]; return '<div class="play"><div class="ptop"><span class="pname">' + esc(P.pattern) + '</span><span class="ptag ' + (pl.urgent ? "urgent" : "opp") + '">' + (pl.urgent ? "Do this now" : "Opportunity") + '</span></div><p class="why">' + esc(whyLine(pl, r)) + '</p><p>' + esc(P.ex[r.pack]) + '</p><p class="cust"><b>For your customers:</b> ' + esc(P.gain) + '</p></div>'; }).join("");
     $("f-msg").hidden = true; $("f-submit").disabled = false;
     show("result");
+    track("stress_test_complete", { industry: state.industry || "", band: BANDS[r.band][0], source: src || "direct" });
   }
 
   // feedback pills
@@ -727,7 +732,7 @@ if (typeof module !== "undefined" && module.exports) module.exports = { LIB: LIB
     if ($("c-contact").checked && !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) { m.className = "msg err"; m.textContent = "Add a valid email so we can reach you, or untick the contact box."; m.hidden = false; return; }
     if (state.sent) { m.className = "msg ok"; m.textContent = "Already sent. Thank you."; m.hidden = false; return; }
     var rec = record(); $("f-submit").disabled = true;
-    var ok = function () { state.sent = true; m.className = "msg ok"; m.textContent = "Thank you" + (rec.contact.name ? ", " + rec.contact.name : "") + ". Your answers have been sent." + (rec.consentContact ? " We'll be in touch within two working days." : ""); m.hidden = false; };
+    var ok = function () { track("stress_test_submit", { contact_opt_in: rec.consentContact ? "yes" : "no" }); state.sent = true; m.className = "msg ok"; m.textContent = "Thank you" + (rec.contact.name ? ", " + rec.contact.name : "") + ". Your answers have been sent." + (rec.consentContact ? " We'll be in touch within two working days." : ""); m.hidden = false; };
     var fail = function () { $("f-submit").disabled = false; m.className = "msg err"; m.textContent = "Your answers couldn't be sent just now. Please try again in a moment."; m.hidden = false; };
     if (!SAVE_URL) { state.sent = true; m.className = "msg ok"; m.textContent = "Thank you. This preview doesn't save answers yet; the shared link will."; m.hidden = false; return; }
     fetch(SAVE_URL, { method: "POST", mode: "no-cors", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify(rec) }).then(ok, fail);
